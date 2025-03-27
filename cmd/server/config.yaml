@@ -1,0 +1,37 @@
+serviceName: es_service
+port: :5007
+development: true
+basePath: /api
+logger:
+  level: debug
+  debug: false
+  encoder: console
+mongo:
+  uri: "mongodb://mongodb:27017"
+  user: admin
+  password: admin
+  db: orders
+mongoCollections:
+  orders: orders
+jaeger:
+  enable: true
+  serviceName: es_service
+  hostPort: "jaeger:6831"
+  logSpans: false
+eventStoreConfig:
+  connectionString: "esdb://eventstore:2113?tls=false"
+subscriptions:
+  poolSize: 60
+  orderPrefix: "order-"
+  mongoProjectionGroupName: "order1"
+  elasticProjectionGroupName: "order-elastic"
+elastic:
+  url: "http://node01:9200"
+  sniff: false
+  gzip: true
+  explain: true
+  fetchSource: true
+  version: true
+  pretty: true
+elasticIndexes:
+  orders: "orders"

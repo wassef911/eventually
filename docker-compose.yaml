@@ -1,0 +1,84 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5007:5007"
+    depends_on:
+      - eventstore
+      - mongodb
+      - jaeger
+      - node01
+    volumes:
+      - .:/app
+  eventstore:
+    image: eventstore/eventstore:21.6.0-buster-slim
+    environment:
+      - EVENTSTORE_CLUSTER_SIZE=1
+      - EVENTSTORE_RUN_PROJECTIONS=All
+      - EVENTSTORE_START_STANDARD_PROJECTIONS=true
+      - EVENTSTORE_EXT_TCP_PORT=1113
+      - EVENTSTORE_HTTP_PORT=2113
+      - EVENTSTORE_INSECURE=true
+      - EVENTSTORE_ENABLE_EXTERNAL_TCP=true
+      - EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP=true
+    ports:
+      - "1113:1113"
+      - "2113:2113"
+    volumes:
+      - type: volume
+        source: eventstore_data
+        target: /var/lib/eventstore
+      - type: volume
+        source: eventstore_logs
+        target: /var/log/eventstore
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+      MONGO_INITDB_DATABASE: orders
+    expose:
+      - "27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  jaeger:
+    restart: always
+    image: jaegertracing/all-in-one:1.21
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+
+  node01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
+    restart: always
+    environment:
+      - node.name=node01
+      - cluster.name=es-cluster-7
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+    volumes:
+      - elastic-data01:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+
+volumes:
+  mongodb_data:
+  eventstore_data:
+  eventstore_logs:
+  elastic-data01:
+    driver: local
