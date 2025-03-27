@@ -8,7 +8,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"github.com/wassef911/astore/internal/api/constants"
+	"github.com/wassef911/eventually/internal/api/constants"
 )
 
 type Config struct {

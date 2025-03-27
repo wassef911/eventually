@@ -9,11 +9,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/wassef911/astore/internal/api/constants"
-	"github.com/wassef911/astore/internal/delivery/models"
-	"github.com/wassef911/astore/internal/infrastructure/tracing"
-	"github.com/wassef911/astore/pkg/config"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/api/constants"
+	"github.com/wassef911/eventually/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/infrastructure/tracing"
+	"github.com/wassef911/eventually/pkg/config"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 type mongoRepository struct {

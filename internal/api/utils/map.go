@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"github.com/wassef911/astore/internal/api/dto"
-	"github.com/wassef911/astore/internal/delivery/aggregate"
-	"github.com/wassef911/astore/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/api/dto"
+	"github.com/wassef911/eventually/internal/delivery/aggregate"
+	"github.com/wassef911/eventually/internal/delivery/models"
 )
 
 func OrderProjectionFrom(orderAggregate *aggregate.OrderAggregate) *models.OrderProjection {

@@ -1,6 +1,6 @@
 package queries
 
-import "github.com/wassef911/astore/internal/api/utils"
+import "github.com/wassef911/eventually/internal/api/utils"
 
 type OrderQueries struct {
 	GetOrderByID GetOrderByIDQueryHandler

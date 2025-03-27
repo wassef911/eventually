@@ -3,9 +3,9 @@ package commands
 import (
 	"context"
 
-	"github.com/wassef911/astore/internal/infrastructure/es/store"
-	"github.com/wassef911/astore/pkg/config"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/infrastructure/es/store"
+	"github.com/wassef911/eventually/pkg/config"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 type commandHandler[T any] interface {

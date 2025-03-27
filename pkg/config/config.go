@@ -6,11 +6,11 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 
-	"github.com/wassef911/astore/internal/infrastructure/elasticsearch"
-	"github.com/wassef911/astore/internal/infrastructure/eventstore"
-	"github.com/wassef911/astore/internal/infrastructure/mongodb"
-	"github.com/wassef911/astore/internal/infrastructure/tracing"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/infrastructure/elasticsearch"
+	"github.com/wassef911/eventually/internal/infrastructure/eventstore"
+	"github.com/wassef911/eventually/internal/infrastructure/mongodb"
+	"github.com/wassef911/eventually/internal/infrastructure/tracing"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 type Config struct {

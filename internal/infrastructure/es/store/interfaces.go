@@ -3,7 +3,7 @@ package store
 import (
 	"context"
 
-	"github.com/wassef911/astore/internal/infrastructure/es"
+	"github.com/wassef911/eventually/internal/infrastructure/es"
 )
 
 // AggregateStore is responsible for loading and saving aggregates.

@@ -8,10 +8,10 @@ import (
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/pkg/errors"
 
-	"github.com/wassef911/astore/internal/delivery/aggregate"
-	"github.com/wassef911/astore/internal/infrastructure/es/store"
-	"github.com/wassef911/astore/pkg/config"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/delivery/aggregate"
+	"github.com/wassef911/eventually/internal/infrastructure/es/store"
+	"github.com/wassef911/eventually/pkg/config"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 // all handlers implement commandHandler

@@ -8,7 +8,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 
-	"github.com/wassef911/astore/internal/infrastructure/es"
+	"github.com/wassef911/eventually/internal/infrastructure/es"
 )
 
 func StartHttpServerTracerSpan(c echo.Context, operationName string) (context.Context, opentracing.Span) {

@@ -9,12 +9,12 @@ import (
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/pkg/errors"
 
-	"github.com/wassef911/astore/internal/api/dto"
-	"github.com/wassef911/astore/internal/api/utils"
-	"github.com/wassef911/astore/internal/delivery/models"
-	"github.com/wassef911/astore/internal/infrastructure/tracing"
-	"github.com/wassef911/astore/pkg/config"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/api/dto"
+	"github.com/wassef911/eventually/internal/api/utils"
+	"github.com/wassef911/eventually/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/infrastructure/tracing"
+	"github.com/wassef911/eventually/pkg/config"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 const (
@@ -79,7 +79,7 @@ func (e *elasticRepository) UpdateOrder(ctx context.Context, order *models.Order
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
 
-	res, err := e.elasticClient.Update().Index(e.cfg.ElasticIndexes.Orders).Id(order.OrderID).Doc(order).FetchSource(true).Do(ctx)
+	res, err := e.elasticClient.Update().Index(e.cfg.ElasticIndexes.Orders).Id(order.OrderID).Doc(order).FetchSource(false).Do(ctx)
 	if err != nil {
 		tracing.TraceErr(span, err)
 		return errors.Wrap(err, "elasticClient.Update")

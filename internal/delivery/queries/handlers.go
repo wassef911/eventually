@@ -8,14 +8,14 @@ import (
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	"github.com/wassef911/astore/internal/api/dto"
-	"github.com/wassef911/astore/internal/api/utils"
-	"github.com/wassef911/astore/internal/delivery/aggregate"
-	"github.com/wassef911/astore/internal/delivery/models"
-	"github.com/wassef911/astore/internal/delivery/repository"
-	"github.com/wassef911/astore/internal/infrastructure/es/store"
-	"github.com/wassef911/astore/pkg/config"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/api/dto"
+	"github.com/wassef911/eventually/internal/api/utils"
+	"github.com/wassef911/eventually/internal/delivery/aggregate"
+	"github.com/wassef911/eventually/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/delivery/repository"
+	"github.com/wassef911/eventually/internal/infrastructure/es/store"
+	"github.com/wassef911/eventually/pkg/config"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 type SearchOrdersQueryHandler interface {
@@ -33,12 +33,12 @@ func NewSearchOrdersHandler(log logger.Logger, cfg *config.Config, es store.Aggr
 	return &searchOrdersHandler{log: log, cfg: cfg, es: es, elasticRepository: elasticRepository}
 }
 
-func (s *searchOrdersHandler) Handle(ctx context.Context, command *SearchOrdersQuery) (*dto.OrderSearchResponseDto, error) {
+func (s *searchOrdersHandler) Handle(ctx context.Context, query *SearchOrdersQuery) (*dto.OrderSearchResponseDto, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "searchOrdersHandler.Handle")
 	defer span.Finish()
-	span.LogFields(log.String("SearchText", command.SearchText))
+	span.LogFields(log.String("SearchText", query.SearchText))
 
-	return s.elasticRepository.Search(ctx, command.SearchText, command.Pq)
+	return s.elasticRepository.Search(ctx, query.SearchText, query.Pq)
 }
 
 type GetOrderByIDQueryHandler interface {

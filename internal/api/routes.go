@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
 
-	"github.com/wassef911/astore/docs"
-	"github.com/wassef911/astore/internal/api/handlers"
+	"github.com/wassef911/eventually/docs"
+	"github.com/wassef911/eventually/internal/api/handlers"
 )
 
 func (s *server) configureRoutes() {

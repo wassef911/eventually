@@ -3,8 +3,8 @@ package commands
 import (
 	"time"
 
-	"github.com/wassef911/astore/internal/delivery/models"
-	"github.com/wassef911/astore/internal/infrastructure/es"
+	"github.com/wassef911/eventually/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/infrastructure/es"
 )
 
 type CreateOrderCommand struct {

@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 )
@@ -70,7 +69,6 @@ func (q *Pagination) SetPage(pageQuery string) error {
 	return nil
 }
 
-// SetOrderBy Set order by
 func (q *Pagination) SetOrderBy(orderByQuery string) {
 	q.OrderBy = orderByQuery
 }
@@ -83,38 +81,27 @@ func (q *Pagination) GetOffset() int {
 	return (q.Page - 1) * q.Size
 }
 
-// GetLimit Get limit
 func (q *Pagination) GetLimit() int {
 	return q.Size
 }
 
-// GetOrderBy Get OrderBy
 func (q *Pagination) GetOrderBy() string {
 	return q.OrderBy
 }
 
-// GetPage Get OrderBy
 func (q *Pagination) GetPage() int {
 	return q.Page
 }
 
-// GetSize Get OrderBy
 func (q *Pagination) GetSize() int {
 	return q.Size
 }
 
-// GetQueryString get query string
-func (q *Pagination) GetQueryString() string {
-	return fmt.Sprintf("page=%v&size=%v&orderBy=%s", q.GetPage(), q.GetSize(), q.GetOrderBy())
-}
-
-// GetTotalPages Get total pages int
 func (q *Pagination) GetTotalPages(totalCount int) int {
 	d := float64(totalCount) / float64(q.GetSize())
 	return int(math.Ceil(d))
 }
 
-// GetHasMore Get has more
 func (q *Pagination) GetHasMore(totalCount int) bool {
 	return q.GetPage() < totalCount/q.GetSize()
 }

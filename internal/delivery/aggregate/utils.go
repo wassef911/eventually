@@ -9,9 +9,9 @@ import (
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/pkg/errors"
 
-	"github.com/wassef911/astore/internal/delivery/models"
-	"github.com/wassef911/astore/internal/infrastructure/es"
-	"github.com/wassef911/astore/internal/infrastructure/es/store"
+	"github.com/wassef911/eventually/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/infrastructure/es"
+	"github.com/wassef911/eventually/internal/infrastructure/es/store"
 )
 
 func GetShopItemsTotalPrice(shopItems []*models.ShopItem) float64 {

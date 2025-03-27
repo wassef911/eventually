@@ -7,11 +7,11 @@ import (
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/pkg/errors"
 
-	"github.com/wassef911/astore/internal/delivery/aggregate"
-	"github.com/wassef911/astore/internal/delivery/events"
-	"github.com/wassef911/astore/internal/delivery/models"
-	"github.com/wassef911/astore/internal/infrastructure/es"
-	"github.com/wassef911/astore/internal/infrastructure/tracing"
+	"github.com/wassef911/eventually/internal/delivery/aggregate"
+	"github.com/wassef911/eventually/internal/delivery/events"
+	"github.com/wassef911/eventually/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/infrastructure/es"
+	"github.com/wassef911/eventually/internal/infrastructure/tracing"
 )
 
 func (o *mongoProjection) onOrderCreate(ctx context.Context, evt es.Event) error {

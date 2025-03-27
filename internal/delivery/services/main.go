@@ -1,12 +1,12 @@
 package service
 
 import (
-	"github.com/wassef911/astore/internal/delivery/commands"
-	"github.com/wassef911/astore/internal/delivery/queries"
-	"github.com/wassef911/astore/internal/delivery/repository"
-	"github.com/wassef911/astore/internal/infrastructure/es/store"
-	"github.com/wassef911/astore/pkg/config"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/delivery/commands"
+	"github.com/wassef911/eventually/internal/delivery/queries"
+	"github.com/wassef911/eventually/internal/delivery/repository"
+	"github.com/wassef911/eventually/internal/infrastructure/es/store"
+	"github.com/wassef911/eventually/pkg/config"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 type OrderService struct {

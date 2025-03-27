@@ -1,6 +1,6 @@
 package dto
 
-import "github.com/wassef911/astore/internal/delivery/models"
+import "github.com/wassef911/eventually/internal/delivery/models"
 
 type ShopItem struct {
 	ID          string  `json:"id" bson:"id,omitempty"`

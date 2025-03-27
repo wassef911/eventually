@@ -13,7 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 
-	"github.com/wassef911/astore/internal/api/constants"
+	"github.com/wassef911/eventually/internal/api/constants"
 )
 
 const (

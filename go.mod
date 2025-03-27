@@ -1,4 +1,4 @@
-module github.com/wassef911/astore
+module github.com/wassef911/eventually
 
 go 1.24
 

@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/wassef911/astore/internal/api/dto"
-	"github.com/wassef911/astore/internal/api/utils"
-	"github.com/wassef911/astore/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/api/dto"
+	"github.com/wassef911/eventually/internal/api/utils"
+	"github.com/wassef911/eventually/internal/delivery/models"
 )
 
 type OrderMongoRepository interface {

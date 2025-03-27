@@ -9,9 +9,9 @@ import (
 	"github.com/opentracing/opentracing-go/log"
 	"github.com/pkg/errors"
 
-	"github.com/wassef911/astore/internal/infrastructure/es"
-	"github.com/wassef911/astore/internal/infrastructure/tracing"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/infrastructure/es"
+	"github.com/wassef911/eventually/internal/infrastructure/tracing"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 type eventStore struct {

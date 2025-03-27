@@ -8,13 +8,13 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/wassef911/astore/internal/api/constants"
-	"github.com/wassef911/astore/internal/delivery/events"
-	"github.com/wassef911/astore/internal/delivery/repository"
-	"github.com/wassef911/astore/internal/infrastructure/es"
-	"github.com/wassef911/astore/internal/infrastructure/tracing"
-	"github.com/wassef911/astore/pkg/config"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/api/constants"
+	"github.com/wassef911/eventually/internal/delivery/events"
+	"github.com/wassef911/eventually/internal/delivery/repository"
+	"github.com/wassef911/eventually/internal/infrastructure/es"
+	"github.com/wassef911/eventually/internal/infrastructure/tracing"
+	"github.com/wassef911/eventually/pkg/config"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 type mongoProjection struct {

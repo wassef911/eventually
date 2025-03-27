@@ -4,9 +4,9 @@ import (
 	"flag"
 	"log"
 
-	"github.com/wassef911/astore/internal/api"
-	"github.com/wassef911/astore/pkg/config"
-	"github.com/wassef911/astore/pkg/logger"
+	"github.com/wassef911/eventually/internal/api"
+	"github.com/wassef911/eventually/pkg/config"
+	"github.com/wassef911/eventually/pkg/logger"
 )
 
 func main() {

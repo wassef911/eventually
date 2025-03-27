@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	"github.com/wassef911/astore/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/delivery/models"
 )
 
 type CreateOrderReqDto struct {

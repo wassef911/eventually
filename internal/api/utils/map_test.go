@@ -6,8 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/wassef911/astore/internal/api/utils"
-	"github.com/wassef911/astore/internal/delivery/models"
+	"github.com/wassef911/eventually/internal/api/utils"
+	"github.com/wassef911/eventually/internal/delivery/models"
 )
 
 func TestOrderResponseFrom(t *testing.T) {
