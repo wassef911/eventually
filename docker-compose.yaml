@@ -15,7 +15,7 @@ services:
     volumes:
       - .:/app
   eventstore:
-    image: eventstore/eventstore:21.6.0-buster-slim
+    image: ghcr.io/kurrent-io/eventstore:23.10.4-alpine
     environment:
       - EVENTSTORE_CLUSTER_SIZE=1
       - EVENTSTORE_RUN_PROJECTIONS=All

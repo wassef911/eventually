@@ -133,8 +133,8 @@ func (o *elasticProjection) onComplete(ctx context.Context, evt es.Event) error 
 	return o.elasticRepository.UpdateOrder(ctx, projection)
 }
 
-func (o *elasticProjection) onDeliveryAddressChnaged(ctx context.Context, evt es.Event) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticProjection.onDeliveryAddressChnaged")
+func (o *elasticProjection) onDeliveryAddressChanged(ctx context.Context, evt es.Event) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticProjection.onDeliveryAddressChanged")
 	defer span.Finish()
 	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
 

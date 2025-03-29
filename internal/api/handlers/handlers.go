@@ -27,7 +27,7 @@ type OrderHandlersI interface {
 	PayOrder() echo.HandlerFunc
 	SubmitOrder() echo.HandlerFunc
 	UpdateShoppingCart() echo.HandlerFunc
-
+	MapRoutes()
 	GetOrderByID() echo.HandlerFunc
 	Search() echo.HandlerFunc
 }

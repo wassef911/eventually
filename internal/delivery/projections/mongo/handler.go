@@ -121,8 +121,8 @@ func (o *mongoProjection) onCompleted(ctx context.Context, evt es.Event) error {
 	return o.mongoRepo.Complete(ctx, op)
 }
 
-func (o *mongoProjection) onDeliveryAddressChnaged(ctx context.Context, evt es.Event) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoProjection.onDeliveryAddressChnaged")
+func (o *mongoProjection) onDeliveryAddressChanged(ctx context.Context, evt es.Event) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoProjection.onDeliveryAddressChanged")
 	defer span.Finish()
 	span.LogFields(log.String("AggregateID", evt.GetAggregateID()))
 

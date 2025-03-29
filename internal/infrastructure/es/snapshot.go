@@ -1,18 +1,8 @@
 package es
 
 import (
-	"context"
 	"encoding/json"
 )
-
-// SnapshotStore is an interface for an event sourcing snapshot store.
-type SnapshotStore interface {
-	// SaveSnapshot save aggregate snapshot.
-	SaveSnapshot(ctx context.Context, aggregate Aggregate) error
-
-	// GetSnapshot load aggregate snapshot.
-	GetSnapshot(ctx context.Context, id string) (*Snapshot, error)
-}
 
 // Snapshot Event Sourcing Snapshotting is an optimisation that reduces time spent on reading event from an event store.
 type Snapshot struct {

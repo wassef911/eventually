@@ -126,15 +126,13 @@ func (s *server) Run() error {
 
 	s.initDatabase(ctx)
 
-	go func() {
-		s.configureRoutes()
-		s.echo.Server.ReadTimeout = readTimeout
-		s.echo.Server.WriteTimeout = writeTimeout
-		s.echo.Server.MaxHeaderBytes = maxHeaderBytes
-		if err := s.echo.Start(s.cfg.Port); err != nil {
-			cancel()
-		}
-	}()
+	s.configureRoutes()
+	s.echo.Server.ReadTimeout = readTimeout
+	s.echo.Server.WriteTimeout = writeTimeout
+	s.echo.Server.MaxHeaderBytes = maxHeaderBytes
+	if err := s.echo.Start(s.cfg.Port); err != nil {
+		cancel()
+	}
 	s.log.Infof("%s is listening on PORT: {%s}", s.cfg.ServiceName, s.cfg.Port)
 
 	<-ctx.Done()
