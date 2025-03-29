@@ -5,7 +5,7 @@ go 1.24
 require (
 	github.com/EventStore/EventStore-Client-Go v1.0.2
 	github.com/go-playground/validator v9.31.0+incompatible
-	github.com/labstack/echo/v4 v4.6.3
+	github.com/labstack/echo/v4 v4.9.0
 	github.com/olivere/elastic/v7 v7.0.31
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pkg/errors v0.9.1
