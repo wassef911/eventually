@@ -60,37 +60,50 @@ func (o *elasticProjection) Subscribe(ctx context.Context, prefixes []string, po
 }
 
 func (o *elasticProjection) ProcessEvents(ctx context.Context, stream *esdb.PersistentSubscription, workerID int) error {
-
 	for {
+		if err := ctx.Err(); err != nil {
+			return err
+		}
+
 		event := stream.Recv()
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
 
-		if event.SubscriptionDropped != nil {
-			return errors.Wrap(event.SubscriptionDropped.Error, "Subscription Dropped")
-		}
+		switch {
+		case event.SubscriptionDropped != nil:
+			return errors.Wrap(event.SubscriptionDropped.Error, "subscription dropped")
 
-		if event.EventAppeared != nil {
-			o.log.ProjectionEvent(constants.ElasticProjection, o.cfg.Subscriptions.MongoProjectionGroupName, event.EventAppeared, workerID)
-
-			err := o.When(ctx, es.NewEventFromRecorded(event.EventAppeared.Event))
-			if err != nil {
-				if err := stream.Nack(err.Error(), esdb.Nack_Retry, event.EventAppeared); err != nil {
-					return errors.Wrap(err, "stream.Nack")
-				}
-			}
-
-			err = stream.Ack(event.EventAppeared)
-			if err != nil {
-				return errors.Wrap(err, "stream.Ack")
-			}
+		case event.EventAppeared != nil:
+			return o.processSingleEvent(ctx, stream, event.EventAppeared, workerID)
 		}
 	}
 }
 
+func (o *elasticProjection) processSingleEvent(
+	ctx context.Context,
+	stream *esdb.PersistentSubscription,
+	event *esdb.ResolvedEvent,
+	workerID int,
+) error {
+	o.log.ProjectionEvent(
+		constants.ElasticProjection,
+		o.cfg.Subscriptions.MongoProjectionGroupName,
+		event,
+		workerID,
+	)
+
+	err := o.When(ctx, es.NewEventFromRecorded(event.Event))
+	if err != nil {
+		if nackErr := stream.Nack(err.Error(), esdb.Nack_Retry, event); nackErr != nil {
+			return errors.Wrap(nackErr, "failed to Nack event")
+		}
+		return nil
+	}
+
+	if ackErr := stream.Ack(event); ackErr != nil {
+		return errors.Wrap(ackErr, "failed to Ack event")
+	}
+
+	return nil
+}
 func (o *elasticProjection) When(ctx context.Context, evt es.Event) error {
 	ctx, span := tracing.StartProjectionTracerSpan(ctx, "elasticProjection.When", evt)
 	defer span.Finish()
