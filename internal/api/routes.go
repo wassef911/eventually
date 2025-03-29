@@ -21,7 +21,6 @@ func (s *server) configureRoutes() {
 
 	s.echo.GET("/swagger/*", echoSwagger.WrapHandler)
 
-	s.echo.Use(s.mw.Apply)
 	s.echo.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		StackSize:         stackSize,
 		DisablePrintStack: true,
@@ -35,4 +34,5 @@ func (s *server) configureRoutes() {
 		},
 	}))
 	s.echo.Use(middleware.BodyLimit(bodyLimit))
+	s.echo.Use(s.mw.Apply)
 }

@@ -12,16 +12,31 @@ import (
 )
 
 func StartHttpServerTracerSpan(c echo.Context, operationName string) (context.Context, opentracing.Span) {
-	spanCtx, err := opentracing.GlobalTracer().Extract(opentracing.HTTPHeaders, opentracing.HTTPHeadersCarrier(c.Request().Header))
+	req := c.Request()
+	spanCtx, err := opentracing.GlobalTracer().Extract(
+		opentracing.HTTPHeaders,
+		opentracing.HTTPHeadersCarrier(req.Header),
+	)
+
+	var serverSpan opentracing.Span
 	if err != nil {
-		serverSpan := opentracing.GlobalTracer().StartSpan(operationName)
-		ctx := opentracing.ContextWithSpan(c.Request().Context(), serverSpan)
-		return ctx, serverSpan
+		// No parent span found in headers, start a new trace
+		serverSpan = opentracing.GlobalTracer().StartSpan(operationName)
+	} else {
+		// Continue the existing trace
+		serverSpan = opentracing.GlobalTracer().StartSpan(
+			operationName,
+			ext.RPCServerOption(spanCtx),
+			opentracing.Tag{Key: string(ext.Component), Value: "HTTP"},
+			opentracing.Tag{Key: string(ext.SpanKind), Value: ext.SpanKindRPCServerEnum},
+		)
 	}
 
-	serverSpan := opentracing.GlobalTracer().StartSpan(operationName, ext.RPCServerOption(spanCtx))
-	ctx := opentracing.ContextWithSpan(c.Request().Context(), serverSpan)
+	// Add standard HTTP tags
+	ext.HTTPMethod.Set(serverSpan, req.Method)
+	ext.HTTPUrl.Set(serverSpan, req.URL.Path)
 
+	ctx := opentracing.ContextWithSpan(req.Context(), serverSpan)
 	return ctx, serverSpan
 }
 

@@ -33,13 +33,12 @@ func (e *eventStore) SaveEvents(ctx context.Context, streamID string, events []e
 		eventsData = append(eventsData, event.ToEventData())
 	}
 
-	stream, err := e.db.AppendToStream(ctx, streamID, esdb.AppendToStreamOptions{}, eventsData...)
+	_, err := e.db.AppendToStream(ctx, streamID, esdb.AppendToStreamOptions{}, eventsData...)
 	if err != nil {
 		tracing.TraceErr(span, err)
 		return err
 	}
 
-	e.log.Debugf("SaveEvents stream: %+v", stream)
 	return nil
 }
 

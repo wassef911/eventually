@@ -31,14 +31,13 @@ func NewOrderProjection(log logger.Logger, db *esdb.Client, mongoRepo repository
 type Worker func(ctx context.Context, stream *esdb.PersistentSubscription, workerID int) error
 
 func (o *mongoProjection) Subscribe(ctx context.Context, prefixes []string, poolSize int, worker Worker) error {
-	o.log.Infof("(starting order subscription) prefixes: {%+v}", prefixes)
 
 	err := o.db.CreatePersistentSubscriptionAll(ctx, o.cfg.Subscriptions.MongoProjectionGroupName, esdb.PersistentAllSubscriptionOptions{
 		Filter: &esdb.SubscriptionFilter{Type: esdb.StreamFilterType, Prefixes: prefixes},
 	})
 	if err != nil {
 		if subscriptionError, ok := err.(*esdb.PersistentSubscriptionError); !ok || ok && (subscriptionError.Code != 6) {
-			o.log.Errorf("(CreatePersistentSubscriptionAll) err: {%v}", subscriptionError.Error())
+			return err
 		}
 	}
 
@@ -77,7 +76,6 @@ func (o *mongoProjection) ProcessEvents(ctx context.Context, stream *esdb.Persis
 		}
 
 		if event.SubscriptionDropped != nil {
-			o.log.Errorf("(SubscriptionDropped) err: {%v}", event.SubscriptionDropped.Error)
 			return errors.Wrap(event.SubscriptionDropped.Error, "Subscription Dropped")
 		}
 
@@ -86,20 +84,15 @@ func (o *mongoProjection) ProcessEvents(ctx context.Context, stream *esdb.Persis
 
 			err := o.When(ctx, es.NewEventFromRecorded(event.EventAppeared.Event))
 			if err != nil {
-				o.log.Errorf("(mongoProjection.when) err: {%v}", err)
-
 				if err := stream.Nack(err.Error(), esdb.Nack_Retry, event.EventAppeared); err != nil {
-					o.log.Errorf("(stream.Nack) err: {%v}", err)
 					return errors.Wrap(err, "stream.Nack")
 				}
 			}
 
 			err = stream.Ack(event.EventAppeared)
 			if err != nil {
-				o.log.Errorf("(stream.Ack) err: {%v}", err)
 				return errors.Wrap(err, "stream.Ack")
 			}
-			o.log.Infof("(ACK) event commit: {%v}", *event.EventAppeared.Commit)
 		}
 	}
 }

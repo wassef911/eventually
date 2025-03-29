@@ -38,13 +38,12 @@ func (e *elasticRepository) IndexOrder(ctx context.Context, order *models.OrderP
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
 
-	res, err := e.elasticClient.Index().Index(e.cfg.ElasticIndexes.Orders).BodyJson(order).Id(order.OrderID).Do(ctx)
+	_, err := e.elasticClient.Index().Index(e.cfg.ElasticIndexes.Orders).BodyJson(order).Id(order.OrderID).Do(ctx)
 	if err != nil {
 		tracing.TraceErr(span, err)
 		return errors.Wrap(err, "elasticClient.Index")
 	}
 
-	e.log.Debugf("(IndexOrder) result: {%s}", res.Result)
 	return nil
 }
 
@@ -79,13 +78,12 @@ func (e *elasticRepository) UpdateOrder(ctx context.Context, order *models.Order
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
 
-	res, err := e.elasticClient.Update().Index(e.cfg.ElasticIndexes.Orders).Id(order.OrderID).Doc(order).FetchSource(false).Do(ctx)
+	_, err := e.elasticClient.Update().Index(e.cfg.ElasticIndexes.Orders).Id(order.OrderID).Doc(order).FetchSource(false).Do(ctx)
 	if err != nil {
 		tracing.TraceErr(span, err)
 		return errors.Wrap(err, "elasticClient.Update")
 	}
 
-	e.log.Debugf("(UpdateShoppingCart) result: {%s}", res.Result)
 	return nil
 }
 

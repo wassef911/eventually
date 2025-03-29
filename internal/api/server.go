@@ -90,10 +90,8 @@ func (s *server) Run() error {
 	}
 	s.mongoClient = mongoDBConn
 	defer mongoDBConn.Disconnect(ctx) // nolint: errcheck
-	s.log.Infof("(Mongo connected) SessionsInProgress: {%v}", mongoDBConn.NumberSessionsInProgress())
 
 	if err := s.initEngine(ctx); err != nil {
-		s.log.Errorf("(initEngine) err: {%v}", err)
 		return err
 	}
 
@@ -115,7 +113,6 @@ func (s *server) Run() error {
 	go func() {
 		err := mongoProjection.Subscribe(ctx, []string{s.cfg.Subscriptions.OrderPrefix}, s.cfg.Subscriptions.PoolSize, mongoProjection.ProcessEvents)
 		if err != nil {
-			s.log.Errorf("(orderProjection.Subscribe) err: {%v}", err)
 			cancel()
 		}
 	}()
@@ -123,7 +120,6 @@ func (s *server) Run() error {
 	go func() {
 		err := elasticProjection.Subscribe(ctx, []string{s.cfg.Subscriptions.OrderPrefix}, s.cfg.Subscriptions.PoolSize, elasticProjection.ProcessEvents)
 		if err != nil {
-			s.log.Errorf("(elasticProjection.Subscribe) err: {%v}", err)
 			cancel()
 		}
 	}()
@@ -136,7 +132,6 @@ func (s *server) Run() error {
 		s.echo.Server.WriteTimeout = writeTimeout
 		s.echo.Server.MaxHeaderBytes = maxHeaderBytes
 		if err := s.echo.Start(s.cfg.Port); err != nil {
-			s.log.Errorf("Error Starting the server: {%v}", err)
 			cancel()
 		}
 	}()

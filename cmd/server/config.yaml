@@ -1,4 +1,4 @@
-serviceName: es_service
+serviceName: delivery
 port: :5007
 development: true
 basePath: /api
@@ -15,7 +15,7 @@ mongoCollections:
   orders: orders
 jaeger:
   enable: true
-  serviceName: es_service
+  serviceName: delivery
   hostPort: "jaeger:6831"
   logSpans: false
 eventStoreConfig:

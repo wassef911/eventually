@@ -1,9 +1,11 @@
 package middlewares
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/opentracing/opentracing-go/log"
 
 	"github.com/wassef911/eventually/internal/infrastructure/tracing"
 	"github.com/wassef911/eventually/pkg/config"
@@ -27,21 +29,27 @@ func NewMiddlewareManager(log logger.Logger, cfg *config.Config) *middlewareMana
 func (mw *middlewareManager) Apply(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		start := time.Now()
-		req := ctx.Request()
 		res := ctx.Response()
-		cc, span := tracing.StartHttpServerTracerSpan(ctx, req.URL.String())
-		defer span.Finish()
-		// Store span in context for access in handler
-		ctx.SetRequest(ctx.Request().WithContext(cc))
+		req := ctx.Request()
+		operationName := fmt.Sprintf("%s %s", ctx.Request().Method, ctx.Path())
+		newCtx, span := tracing.StartHttpServerTracerSpan(ctx, operationName)
+		span.LogFields(
+			log.String("RemoteAddr", req.RemoteAddr),
+			log.String("Path", req.URL.Path),
+		)
+
+		newReq := req.WithContext(newCtx)
+		ctx.SetRequest(newReq)
 
 		err := next(ctx)
+		span.Finish() // Finish AFTER downstream handlers complete
 
 		status := res.Status
 		size := res.Size
 		s := time.Since(start)
 
 		// log it
-		mw.log.HttpMiddlewareAccessLogger(req.Method, req.URL.String(), status, size, s)
+		mw.log.HttpMiddlewareAccessLogger(req.Method, newReq.URL.Path, status, size, s)
 
 		// stop trace
 		if err != nil {

@@ -69,7 +69,6 @@ func (m *mongoRepository) UpdateOrder(ctx context.Context, order *models.OrderPr
 		return err
 	}
 
-	m.log.Debugf("(UpdateShoppingCart) result OrderID: {%s}", res.OrderID)
 	return nil
 }
 
@@ -89,7 +88,6 @@ func (m *mongoRepository) UpdateCancel(ctx context.Context, order *models.OrderP
 		return err
 	}
 
-	m.log.Debugf("(UpdateCancel) result OrderID: {%s}", res.OrderID)
 	return nil
 }
 
@@ -109,7 +107,6 @@ func (m *mongoRepository) UpdatePayment(ctx context.Context, order *models.Order
 		return err
 	}
 
-	m.log.Debugf("(UpdatePayment) result OrderID: {%s}", res.OrderID)
 	return nil
 }
 
@@ -129,7 +126,6 @@ func (m *mongoRepository) Complete(ctx context.Context, order *models.OrderProje
 		return err
 	}
 
-	m.log.Debugf("(Complete) result OrderID: {%s}", res.OrderID)
 	return nil
 }
 
@@ -149,7 +145,6 @@ func (m *mongoRepository) UpdateDeliveryAddress(ctx context.Context, order *mode
 		return err
 	}
 
-	m.log.Debugf("(UpdateDeliveryAddress) result OrderID: {%s}", res.OrderID)
 	return nil
 }
 
@@ -169,7 +164,6 @@ func (m *mongoRepository) UpdateSubmit(ctx context.Context, order *models.OrderP
 		return err
 	}
 
-	m.log.Debugf("(UpdateSubmit) result OrderID: {%s}", res.OrderID)
 	return nil
 }
 

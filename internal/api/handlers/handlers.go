@@ -268,7 +268,6 @@ func (h *orderHandlers) ChangeDeliveryAddress() echo.HandlerFunc {
 
 		var data dto.ChangeDeliveryAddressReqDto
 		if err := c.Bind(&data); err != nil {
-			h.log.Errorf("(Bind) err: {%v}", err)
 			tracing.TraceErr(span, err)
 			return errors.ErrorCtxResponse(c, err, h.cfg.Logger.Debug)
 		}

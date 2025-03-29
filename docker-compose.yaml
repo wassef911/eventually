@@ -4,7 +4,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "5007:5007"
     depends_on:
@@ -38,7 +38,6 @@ services:
 
   mongodb:
     image: mongo:latest
-    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
@@ -65,7 +64,6 @@ services:
 
   node01:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.11.1
-    restart: always
     environment:
       - node.name=node01
       - cluster.name=es-cluster-7
