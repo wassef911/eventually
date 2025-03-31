@@ -3,9 +3,10 @@ package es
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	"github.com/EventStore/EventStore-Client-Go/esdb"
 	uuid "github.com/satori/go.uuid"
-	"time"
 )
 
 // EventType is the type of any event, used as its unique identifier.

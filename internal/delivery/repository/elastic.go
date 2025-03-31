@@ -23,22 +23,22 @@ const (
 	minimumNumberShouldMatch = 1
 )
 
-type elasticRepository struct {
+type ElasticRepository struct {
 	log           logger.Logger
-	cfg           *config.Config
+	config        *config.Config
 	elasticClient *v7.Client
 }
 
-func NewElasticRepository(log logger.Logger, cfg *config.Config, elasticClient *v7.Client) *elasticRepository {
-	return &elasticRepository{log: log, cfg: cfg, elasticClient: elasticClient}
+func NewElasticRepository(log logger.Logger, config *config.Config, elasticClient *v7.Client) *ElasticRepository {
+	return &ElasticRepository{log: log, config: config, elasticClient: elasticClient}
 }
 
-func (e *elasticRepository) IndexOrder(ctx context.Context, order *models.OrderProjection) error {
+func (e *ElasticRepository) IndexOrder(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticRepository.IndexOrder")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
 
-	_, err := e.elasticClient.Index().Index(e.cfg.ElasticIndexes.Orders).BodyJson(order).Id(order.OrderID).Do(ctx)
+	_, err := e.elasticClient.Index().Index(e.config.ElasticIndexes.Orders).BodyJson(order).Id(order.OrderID).Do(ctx)
 	if err != nil {
 		tracing.TraceErr(span, err)
 		return errors.Wrap(err, "elasticClient.Index")
@@ -47,12 +47,12 @@ func (e *elasticRepository) IndexOrder(ctx context.Context, order *models.OrderP
 	return nil
 }
 
-func (e *elasticRepository) GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error) {
+func (e *ElasticRepository) GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticRepository.GetByID")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", orderID))
 
-	result, err := e.elasticClient.Get().Index(e.cfg.ElasticIndexes.Orders).Id(orderID).FetchSource(true).Do(ctx)
+	result, err := e.elasticClient.Get().Index(e.config.ElasticIndexes.Orders).Id(orderID).FetchSource(true).Do(ctx)
 	if err != nil {
 		tracing.TraceErr(span, err)
 		return nil, errors.Wrap(err, "elasticClient.Get")
@@ -73,12 +73,12 @@ func (e *elasticRepository) GetByID(ctx context.Context, orderID string) (*model
 	return &order, nil
 }
 
-func (e *elasticRepository) UpdateOrder(ctx context.Context, order *models.OrderProjection) error {
+func (e *ElasticRepository) UpdateOrder(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticRepository.UpdateShoppingCart")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
 
-	_, err := e.elasticClient.Update().Index(e.cfg.ElasticIndexes.Orders).Id(order.OrderID).Doc(order).FetchSource(false).Do(ctx)
+	_, err := e.elasticClient.Update().Index(e.config.ElasticIndexes.Orders).Id(order.OrderID).Doc(order).FetchSource(false).Do(ctx)
 	if err != nil {
 		tracing.TraceErr(span, err)
 		return errors.Wrap(err, "elasticClient.Update")
@@ -87,7 +87,7 @@ func (e *elasticRepository) UpdateOrder(ctx context.Context, order *models.Order
 	return nil
 }
 
-func (e *elasticRepository) Search(ctx context.Context, text string, pq *utils.Pagination) (*dto.OrderSearchResponseDto, error) {
+func (e *ElasticRepository) Search(ctx context.Context, text string, pq *utils.Pagination) (*dto.OrderSearchResponseDto, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticRepository.Search")
 	defer span.Finish()
 	span.LogFields(log.String("Search", text))
@@ -96,14 +96,14 @@ func (e *elasticRepository) Search(ctx context.Context, text string, pq *utils.P
 		Should(v7.NewMatchPhrasePrefixQuery(shopItemTitle, text), v7.NewMatchPhrasePrefixQuery(shopItemDescription, text)).
 		MinimumNumberShouldMatch(minimumNumberShouldMatch)
 
-	searchResult, err := e.elasticClient.Search(e.cfg.ElasticIndexes.Orders).
+	searchResult, err := e.elasticClient.Search(e.config.ElasticIndexes.Orders).
 		Query(shouldMatch).
 		From(pq.GetOffset()).
-		Explain(e.cfg.Elastic.Explain).
-		FetchSource(e.cfg.Elastic.FetchSource).
-		Version(e.cfg.Elastic.Version).
+		Explain(e.config.Elastic.Explain).
+		FetchSource(e.config.Elastic.FetchSource).
+		Version(e.config.Elastic.Version).
 		Size(pq.GetSize()).
-		Pretty(e.cfg.Elastic.Pretty).
+		Pretty(e.config.Elastic.Pretty).
 		Do(ctx)
 	if err != nil {
 		tracing.TraceErr(span, err)

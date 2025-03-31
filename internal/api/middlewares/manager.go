@@ -18,12 +18,12 @@ type MiddlewareManager interface {
 }
 
 type middlewareManager struct {
-	log logger.Logger
-	cfg *config.Config
+	log    logger.Logger
+	config *config.Config
 }
 
-func NewMiddlewareManager(log logger.Logger, cfg *config.Config) *middlewareManager {
-	return &middlewareManager{log: log, cfg: cfg}
+func NewMiddlewareManager(log logger.Logger, config *config.Config) *middlewareManager {
+	return &middlewareManager{log: log, config: config}
 }
 
 func (mw *middlewareManager) Apply(next echo.HandlerFunc) echo.HandlerFunc {
@@ -54,7 +54,7 @@ func (mw *middlewareManager) Apply(next echo.HandlerFunc) echo.HandlerFunc {
 		// stop trace
 		if err != nil {
 			tracing.TraceErr(span, err)
-			return errors.ErrorCtxResponse(ctx, err, mw.cfg.Logger.Debug)
+			return errors.ErrorCtxResponse(ctx, err, mw.config.Logger.Debug)
 		}
 		return err
 	}

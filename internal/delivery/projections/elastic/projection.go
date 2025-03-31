@@ -22,17 +22,17 @@ type Worker func(ctx context.Context, stream *esdb.PersistentSubscription, worke
 type elasticProjection struct {
 	log               logger.Logger
 	db                *esdb.Client
-	cfg               *config.Config
+	config            *config.Config
 	elasticRepository repository.ElasticOrderRepository
 }
 
-func NewElasticProjection(log logger.Logger, db *esdb.Client, elasticRepository repository.ElasticOrderRepository, cfg *config.Config) *elasticProjection {
-	return &elasticProjection{log: log, db: db, elasticRepository: elasticRepository, cfg: cfg}
+func NewElasticProjection(log logger.Logger, db *esdb.Client, elasticRepository repository.ElasticOrderRepository, config *config.Config) *elasticProjection {
+	return &elasticProjection{log: log, db: db, elasticRepository: elasticRepository, config: config}
 }
 
 func (o *elasticProjection) Subscribe(ctx context.Context, prefixes []string, poolSize int, worker Worker) error {
 
-	err := o.db.CreatePersistentSubscriptionAll(ctx, o.cfg.Subscriptions.ElasticProjectionGroupName, esdb.PersistentAllSubscriptionOptions{
+	err := o.db.CreatePersistentSubscriptionAll(ctx, o.config.Subscriptions.ElasticProjectionGroupName, esdb.PersistentAllSubscriptionOptions{
 		Filter: &esdb.SubscriptionFilter{Type: esdb.StreamFilterType, Prefixes: prefixes},
 	})
 	if err != nil {
@@ -44,7 +44,7 @@ func (o *elasticProjection) Subscribe(ctx context.Context, prefixes []string, po
 	stream, err := o.db.ConnectToPersistentSubscription(
 		ctx,
 		constants.EsAll,
-		o.cfg.Subscriptions.ElasticProjectionGroupName,
+		o.config.Subscriptions.ElasticProjectionGroupName,
 		esdb.ConnectToPersistentSubscriptionOptions{},
 	)
 	if err != nil {
@@ -85,7 +85,7 @@ func (o *elasticProjection) processSingleEvent(
 ) error {
 	o.log.ProjectionEvent(
 		constants.ElasticProjection,
-		o.cfg.Subscriptions.MongoProjectionGroupName,
+		o.config.Subscriptions.MongoProjectionGroupName,
 		event,
 		workerID,
 	)

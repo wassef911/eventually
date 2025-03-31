@@ -20,7 +20,6 @@ type Config struct {
 // Logger methods interface
 type Logger interface {
 	InitLogger()
-	Sync() error
 	Debugf(template string, args ...interface{})
 	Info(args ...interface{})
 	Infof(template string, args ...interface{})
@@ -30,10 +29,7 @@ type Logger interface {
 	Error(args ...interface{})
 	Errorf(template string, args ...interface{})
 	Err(msg string, err error)
-	DPanic(args ...interface{})
-	DPanicf(template string, args ...interface{})
 	Fatal(args ...interface{})
-	Fatalf(template string, args ...interface{})
 	Printf(template string, args ...interface{})
 	WithName(name string)
 	HttpMiddlewareAccessLogger(method string, uri string, status int, size int64, time time.Duration)
@@ -50,19 +46,16 @@ type appLogger struct {
 }
 
 // NewAppLogger App Logger constructor
-func NewAppLogger(cfg *Config) *appLogger {
-	return &appLogger{level: cfg.LogLevel, Debug: cfg.Debug, encoding: cfg.Encoder}
+func NewAppLogger(config *Config) *appLogger {
+	return &appLogger{level: config.LogLevel, Debug: config.Debug, encoding: config.Encoder}
 }
 
-// For mapping config logger to email_service logger levels
 var loggerLevelMap = map[string]zapcore.Level{
-	"debug":  zapcore.DebugLevel,
-	"info":   zapcore.InfoLevel,
-	"warn":   zapcore.WarnLevel,
-	"error":  zapcore.ErrorLevel,
-	"dpanic": zapcore.DPanicLevel,
-	"panic":  zapcore.PanicLevel,
-	"fatal":  zapcore.FatalLevel,
+	"debug": zapcore.DebugLevel,
+	"info":  zapcore.InfoLevel,
+	"warn":  zapcore.WarnLevel,
+	"error": zapcore.ErrorLevel,
+	"fatal": zapcore.FatalLevel,
 }
 
 func (l *appLogger) getLoggerLevel() zapcore.Level {
@@ -174,40 +167,9 @@ func (l *appLogger) Err(msg string, err error) {
 	l.logger.Error(msg, zap.Error(err))
 }
 
-// DPanic uses fmt.Sprint to construct and log a message. In development, the logger then panics. (See DPanicLevel for details.)
-func (l *appLogger) DPanic(args ...interface{}) {
-	l.sugarLogger.DPanic(args...)
-}
-
-// DPanicf uses fmt.Sprintf to log a templated message. In development, the logger then panics. (See DPanicLevel for details.)
-func (l *appLogger) DPanicf(template string, args ...interface{}) {
-	l.sugarLogger.DPanicf(template, args...)
-}
-
-// Panic uses fmt.Sprint to construct and log a message, then panics.
-func (l *appLogger) Panic(args ...interface{}) {
-	l.sugarLogger.Panic(args...)
-}
-
-// Panicf uses fmt.Sprintf to log a templated message, then panics
-func (l *appLogger) Panicf(template string, args ...interface{}) {
-	l.sugarLogger.Panicf(template, args...)
-}
-
 // Fatal uses fmt.Sprint to construct and log a message, then calls os.Exit.
 func (l *appLogger) Fatal(args ...interface{}) {
 	l.sugarLogger.Fatal(args...)
-}
-
-// Fatalf uses fmt.Sprintf to log a templated message, then calls os.Exit.
-func (l *appLogger) Fatalf(template string, args ...interface{}) {
-	l.sugarLogger.Fatalf(template, args...)
-}
-
-// Sync flushes any buffered log entries
-func (l *appLogger) Sync() error {
-	go l.logger.Sync() // nolint: errcheck
-	return l.sugarLogger.Sync()
 }
 
 func (l *appLogger) HttpMiddlewareAccessLogger(method, uri string, status int, size int64, time time.Duration) {

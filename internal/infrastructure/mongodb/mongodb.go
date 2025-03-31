@@ -22,11 +22,11 @@ type Config struct {
 	Db       string `mapstructure:"db"`
 }
 
-func NewMongoClient(ctx context.Context, cfg *Config) (*mongo.Client, error) {
+func NewMongoClient(ctx context.Context, config *Config) (*mongo.Client, error) {
 
 	client, err := mongo.NewClient(
-		options.Client().ApplyURI(cfg.URI).
-			SetAuth(options.Credential{Username: cfg.User, Password: cfg.Password}).
+		options.Client().ApplyURI(config.URI).
+			SetAuth(options.Credential{Username: config.User, Password: config.Password}).
 			SetConnectTimeout(connectTimeout).
 			SetMaxConnIdleTime(maxConnIdleTime).
 			SetMinPoolSize(minPoolSize).

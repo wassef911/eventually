@@ -12,13 +12,13 @@ import (
 func main() {
 	flag.Parse()
 
-	cfg, err := config.New()
+	config, err := config.New()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	appLogger := logger.NewAppLogger(cfg.Logger)
+	appLogger := logger.NewAppLogger(config.Logger)
 	appLogger.InitLogger()
-	appLogger.WithName(cfg.ServiceName)
-	appLogger.Fatal(api.New(cfg, appLogger).Run())
+	appLogger.WithName(config.ServiceName)
+	appLogger.Fatal(api.New(config, appLogger).Run())
 }

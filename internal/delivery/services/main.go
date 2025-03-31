@@ -16,22 +16,22 @@ type OrderService struct {
 
 func New(
 	log logger.Logger,
-	cfg *config.Config,
+	config *config.Config,
 	es store.AggregateStore,
 	mongoRepo repository.OrderMongoRepository,
 	elasticRepo repository.ElasticOrderRepository,
 ) *OrderService {
 
-	createOrderHandler := commands.NewCreateOrderHandler(log, cfg, es)
-	orderPaidHandler := commands.NewOrderPaidHandler(log, cfg, es)
-	submitOrderHandler := commands.NewSubmitOrderHandler(log, cfg, es)
-	updateOrderCmdHandler := commands.NewupdateShoppingCartCommandHandler(log, cfg, es)
-	cancelOrderCommandHandler := commands.NewCancelOrderCommandHandler(log, cfg, es)
-	deliveryOrderCommandHandler := commands.NewCompleteOrderCommandHandler(log, cfg, es)
-	changeOrderDeliveryAddressCmdHandler := commands.NewchangeDeliveryAddressCommandHandler(log, cfg, es)
+	createOrderHandler := commands.NewCreateOrderHandler(log, config, es)
+	orderPaidHandler := commands.NewOrderPaidHandler(log, config, es)
+	submitOrderHandler := commands.NewSubmitOrderHandler(log, config, es)
+	updateOrderCmdHandler := commands.NewupdateShoppingCartCommandHandler(log, config, es)
+	cancelOrderCommandHandler := commands.NewCancelOrderCommandHandler(log, config, es)
+	deliveryOrderCommandHandler := commands.NewCompleteOrderCommandHandler(log, config, es)
+	changeOrderDeliveryAddressCmdHandler := commands.NewchangeDeliveryAddressCommandHandler(log, config, es)
 
-	getOrderByIDHandler := queries.NewGetOrderByIDHandler(log, cfg, es, mongoRepo)
-	searchOrdersHandler := queries.NewSearchOrdersHandler(log, cfg, es, elasticRepo)
+	getOrderByIDHandler := queries.NewGetOrderByIDHandler(log, config, es, mongoRepo)
+	searchOrdersHandler := queries.NewSearchOrdersHandler(log, config, es, elasticRepo)
 
 	orderCommands := commands.New(
 		*createOrderHandler,

@@ -16,17 +16,17 @@ import (
 	"github.com/wassef911/eventually/pkg/logger"
 )
 
-type mongoRepository struct {
-	log logger.Logger
-	cfg *config.Config
-	db  *mongo.Client
+type MongoRepository struct {
+	log    logger.Logger
+	config *config.Config
+	db     *mongo.Client
 }
 
-func NewMongoRepository(log logger.Logger, cfg *config.Config, db *mongo.Client) *mongoRepository {
-	return &mongoRepository{log: log, cfg: cfg, db: db}
+func NewMongoRepository(log logger.Logger, config *config.Config, db *mongo.Client) *MongoRepository {
+	return &MongoRepository{log: log, config: config, db: db}
 }
 
-func (m *mongoRepository) Insert(ctx context.Context, order *models.OrderProjection) (string, error) {
+func (m *MongoRepository) Insert(ctx context.Context, order *models.OrderProjection) (string, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.Insert")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
@@ -40,7 +40,7 @@ func (m *mongoRepository) Insert(ctx context.Context, order *models.OrderProject
 	return order.OrderID, nil
 }
 
-func (m *mongoRepository) GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error) {
+func (m *MongoRepository) GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.GetByID")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", orderID))
@@ -54,7 +54,7 @@ func (m *mongoRepository) GetByID(ctx context.Context, orderID string) (*models.
 	return &orderProjection, nil
 }
 
-func (m *mongoRepository) UpdateOrder(ctx context.Context, order *models.OrderProjection) error {
+func (m *MongoRepository) UpdateOrder(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.UpdateShoppingCart")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
@@ -72,7 +72,7 @@ func (m *mongoRepository) UpdateOrder(ctx context.Context, order *models.OrderPr
 	return nil
 }
 
-func (m *mongoRepository) UpdateCancel(ctx context.Context, order *models.OrderProjection) error {
+func (m *MongoRepository) UpdateCancel(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.UpdateCancel")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
@@ -91,7 +91,7 @@ func (m *mongoRepository) UpdateCancel(ctx context.Context, order *models.OrderP
 	return nil
 }
 
-func (m *mongoRepository) UpdatePayment(ctx context.Context, order *models.OrderProjection) error {
+func (m *MongoRepository) UpdatePayment(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.UpdatePayment")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
@@ -110,7 +110,7 @@ func (m *mongoRepository) UpdatePayment(ctx context.Context, order *models.Order
 	return nil
 }
 
-func (m *mongoRepository) Complete(ctx context.Context, order *models.OrderProjection) error {
+func (m *MongoRepository) Complete(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.Complete")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
@@ -129,7 +129,7 @@ func (m *mongoRepository) Complete(ctx context.Context, order *models.OrderProje
 	return nil
 }
 
-func (m *mongoRepository) UpdateDeliveryAddress(ctx context.Context, order *models.OrderProjection) error {
+func (m *MongoRepository) UpdateDeliveryAddress(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.UpdateDeliveryAddress")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
@@ -148,7 +148,7 @@ func (m *mongoRepository) UpdateDeliveryAddress(ctx context.Context, order *mode
 	return nil
 }
 
-func (m *mongoRepository) UpdateSubmit(ctx context.Context, order *models.OrderProjection) error {
+func (m *MongoRepository) UpdateSubmit(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "mongoRepository.UpdateSubmit")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
@@ -167,6 +167,6 @@ func (m *mongoRepository) UpdateSubmit(ctx context.Context, order *models.OrderP
 	return nil
 }
 
-func (m *mongoRepository) getOrdersCollection() *mongo.Collection {
-	return m.db.Database(m.cfg.Mongo.Db).Collection(m.cfg.MongoCollections.Orders)
+func (m *MongoRepository) getOrdersCollection() *mongo.Collection {
+	return m.db.Database(m.config.Mongo.Db).Collection(m.config.MongoCollections.Orders)
 }

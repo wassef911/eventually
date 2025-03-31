@@ -47,7 +47,7 @@ func New() (*Config, error) {
 	var configPath string
 	flag.StringVar(&configPath, "config", "cmd/server/config.yaml", "path to config file")
 
-	cfg := &Config{}
+	config := &Config{}
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile(configPath)
 
@@ -55,8 +55,8 @@ func New() (*Config, error) {
 		return nil, errors.Wrap(err, "viper.ReadInConfig")
 	}
 
-	if err := viper.Unmarshal(cfg); err != nil {
+	if err := viper.Unmarshal(config); err != nil {
 		return nil, errors.Wrap(err, "viper.Unmarshal")
 	}
-	return cfg, nil
+	return config, nil
 }

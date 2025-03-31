@@ -27,8 +27,8 @@ type cancelOrderCommandHandler struct {
 	baseCommandHandler
 }
 
-func NewCancelOrderCommandHandler(log logger.Logger, cfg *config.Config, es store.AggregateStore) *cancelOrderCommandHandler {
-	return &cancelOrderCommandHandler{baseCommandHandler{log: log, cfg: cfg, es: es}}
+func NewCancelOrderCommandHandler(log logger.Logger, config *config.Config, es store.AggregateStore) *cancelOrderCommandHandler {
+	return &cancelOrderCommandHandler{baseCommandHandler{log: log, config: config, es: es}}
 }
 
 func (c *cancelOrderCommandHandler) Handle(ctx context.Context, command *CancelOrderCommand) error {
@@ -52,8 +52,8 @@ type changeDeliveryAddressCommandHandler struct {
 	baseCommandHandler
 }
 
-func NewchangeDeliveryAddressCommandHandler(log logger.Logger, cfg *config.Config, es store.AggregateStore) *changeDeliveryAddressCommandHandler {
-	return &changeDeliveryAddressCommandHandler{baseCommandHandler{log: log, cfg: cfg, es: es}}
+func NewchangeDeliveryAddressCommandHandler(log logger.Logger, config *config.Config, es store.AggregateStore) *changeDeliveryAddressCommandHandler {
+	return &changeDeliveryAddressCommandHandler{baseCommandHandler{log: log, config: config, es: es}}
 }
 
 func (c *changeDeliveryAddressCommandHandler) Handle(ctx context.Context, command *ChangeDeliveryAddressCommand) error {
@@ -77,8 +77,8 @@ type completeOrderCommandHandler struct {
 	baseCommandHandler
 }
 
-func NewCompleteOrderCommandHandler(log logger.Logger, cfg *config.Config, es store.AggregateStore) *completeOrderCommandHandler {
-	return &completeOrderCommandHandler{baseCommandHandler{log: log, cfg: cfg, es: es}}
+func NewCompleteOrderCommandHandler(log logger.Logger, config *config.Config, es store.AggregateStore) *completeOrderCommandHandler {
+	return &completeOrderCommandHandler{baseCommandHandler{log: log, config: config, es: es}}
 }
 
 func (c *completeOrderCommandHandler) Handle(ctx context.Context, command *CompleteOrderCommand) error {
@@ -102,8 +102,8 @@ type createOrderHandler struct {
 	baseCommandHandler
 }
 
-func NewCreateOrderHandler(log logger.Logger, cfg *config.Config, es store.AggregateStore) *createOrderHandler {
-	return &createOrderHandler{baseCommandHandler{log: log, cfg: cfg, es: es}}
+func NewCreateOrderHandler(log logger.Logger, config *config.Config, es store.AggregateStore) *createOrderHandler {
+	return &createOrderHandler{baseCommandHandler{log: log, config: config, es: es}}
 }
 
 func (c *createOrderHandler) Handle(ctx context.Context, command *CreateOrderCommand) error {
@@ -129,8 +129,8 @@ type payOrderCommandHandler struct {
 	baseCommandHandler
 }
 
-func NewOrderPaidHandler(log logger.Logger, cfg *config.Config, es store.AggregateStore) *payOrderCommandHandler {
-	return &payOrderCommandHandler{baseCommandHandler{log: log, cfg: cfg, es: es}}
+func NewOrderPaidHandler(log logger.Logger, config *config.Config, es store.AggregateStore) *payOrderCommandHandler {
+	return &payOrderCommandHandler{baseCommandHandler{log: log, config: config, es: es}}
 }
 
 func (c *payOrderCommandHandler) Handle(ctx context.Context, command *PayOrderCommand) error {
@@ -154,8 +154,8 @@ type submitOrderCommandHandler struct {
 	baseCommandHandler
 }
 
-func NewSubmitOrderHandler(log logger.Logger, cfg *config.Config, es store.AggregateStore) *submitOrderCommandHandler {
-	return &submitOrderCommandHandler{baseCommandHandler{log: log, cfg: cfg, es: es}}
+func NewSubmitOrderHandler(log logger.Logger, config *config.Config, es store.AggregateStore) *submitOrderCommandHandler {
+	return &submitOrderCommandHandler{baseCommandHandler{log: log, config: config, es: es}}
 }
 
 func (c *submitOrderCommandHandler) Handle(ctx context.Context, command *SubmitOrderCommand) error {
@@ -179,8 +179,8 @@ type updateShoppingCartCommandHandler struct {
 	baseCommandHandler
 }
 
-func NewupdateShoppingCartCommandHandler(log logger.Logger, cfg *config.Config, es store.AggregateStore) *updateShoppingCartCommandHandler {
-	return &updateShoppingCartCommandHandler{baseCommandHandler{log: log, cfg: cfg, es: es}}
+func NewupdateShoppingCartCommandHandler(log logger.Logger, config *config.Config, es store.AggregateStore) *updateShoppingCartCommandHandler {
+	return &updateShoppingCartCommandHandler{baseCommandHandler{log: log, config: config, es: es}}
 }
 
 func (c *updateShoppingCartCommandHandler) Handle(ctx context.Context, command *UpdateShoppingCartCommand) error {

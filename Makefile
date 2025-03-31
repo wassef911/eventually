@@ -6,8 +6,8 @@ dev:
 	docker-compose -f docker-compose.yaml logs -f app
 
 test:
-	@echo Starting test 
-	go test -v ./... 
+	@echo Starting test
+	go test -v ./...
 
 clean:
 	docker system prune -f
@@ -29,4 +29,3 @@ lint:
 
 swagger:
 	swag init --parseDependency --parseInternal -g **/**/*.go
-

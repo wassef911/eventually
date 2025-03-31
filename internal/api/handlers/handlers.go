@@ -35,23 +35,23 @@ type OrderHandlersI interface {
 var _ OrderHandlersI = &orderHandlers{}
 
 type orderHandlers struct {
-	group *echo.Group
-	log   logger.Logger
-	mw    api.MiddlewareManager
-	cfg   *config.Config
-	v     *validator.Validate
-	os    *service.OrderService
+	group  *echo.Group
+	log    logger.Logger
+	mw     api.MiddlewareManager
+	config *config.Config
+	v      *validator.Validate
+	os     *service.OrderService
 }
 
 func NewOrderHandlers(
 	group *echo.Group,
 	log logger.Logger,
 	mw api.MiddlewareManager,
-	cfg *config.Config,
+	config *config.Config,
 	v *validator.Validate,
 	os *service.OrderService,
 ) *orderHandlers {
-	return &orderHandlers{group: group, log: log, mw: mw, cfg: cfg, v: v, os: os}
+	return &orderHandlers{group: group, log: log, mw: mw, config: config, v: v, os: os}
 }
 
 func (h *orderHandlers) MapRoutes() {
@@ -269,7 +269,7 @@ func (h *orderHandlers) ChangeDeliveryAddress() echo.HandlerFunc {
 		var data dto.ChangeDeliveryAddressReqDto
 		if err := c.Bind(&data); err != nil {
 			tracing.TraceErr(span, err)
-			return errors.ErrorCtxResponse(c, err, h.cfg.Logger.Debug)
+			return errors.ErrorCtxResponse(c, err, h.config.Logger.Debug)
 		}
 
 		command := commands.NewChangeDeliveryAddressCommand(orderID.String(), data.DeliveryAddress)

@@ -14,18 +14,18 @@ const (
 // HandleCommand Aggregate commands' handler method
 // Example
 //
-// func (a *OrderAggregate) HandleCommand(command interface{}) error {
-//	switch c := command.(type) {
-//	case *CreateOrderCommand:
-//		return a.handleCreateOrderCommand(c)
-//	case *OrderPaidCommand:
-//		return a.handleOrderPaidCommand(c)
-//	case *SubmitOrderCommand:
-//		return a.handleSubmitOrderCommand(c)
-//	default:
-//		return errors.New("invalid command type")
+//	func (a *OrderAggregate) HandleCommand(command interface{}) error {
+//		switch c := command.(type) {
+//		case *CreateOrderCommand:
+//			return a.handleCreateOrderCommand(c)
+//		case *OrderPaidCommand:
+//			return a.handleOrderPaidCommand(c)
+//		case *SubmitOrderCommand:
+//			return a.handleSubmitOrderCommand(c)
+//		default:
+//			return errors.New("invalid command type")
+//		}
 //	}
-//}
 type HandleCommand interface {
 	HandleCommand(ctx context.Context, command Command) error
 }
@@ -33,23 +33,23 @@ type HandleCommand interface {
 // When process and update aggregate state on specified es.Event type
 // Example:
 //
-//func (a *OrderAggregate) When(evt es.Event) error {
+// func (a *OrderAggregate) When(evt es.Event) error {
 //
-//	switch evt.GetEventType() {
+//		switch evt.GetEventType() {
 //
-//	case events.OrderCreated:
-//		var eventData events.OrderCreatedEvent
-//		if err := json.Unmarshal(evt.GetData(), &eventData); err != nil {
-//			return err
+//		case events.OrderCreated:
+//			var eventData events.OrderCreatedEvent
+//			if err := json.Unmarshal(evt.GetData(), &eventData); err != nil {
+//				return err
+//			}
+//			a.Order.ItemsIDs = eventData.ItemsIDs
+//			a.Order.Created = true
+//			return nil
+//
+//		default:
+//			return errors.New("invalid event type")
 //		}
-//		a.Order.ItemsIDs = eventData.ItemsIDs
-//		a.Order.Created = true
-//		return nil
-//
-//	default:
-//		return errors.New("invalid event type")
 //	}
-//}
 type When interface {
 	When(event Event) error
 }
@@ -107,15 +107,15 @@ type AggregateBase struct {
 // main aggregate must realize When interface and pass as argument to constructor
 // Example of recommended aggregate constructor method:
 //
-// func NewOrderAggregate() *OrderAggregate {
-//	orderAggregate := &OrderAggregate{
-//		Order: models.NewOrder(),
+//	func NewOrderAggregate() *OrderAggregate {
+//		orderAggregate := &OrderAggregate{
+//			Order: models.NewOrder(),
+//		}
+//		base := es.NewAggregateBase(orderAggregate.When)
+//		base.SetType(OrderAggregateType)
+//		orderAggregate.AggregateBase = base
+//		return orderAggregate
 //	}
-//	base := es.NewAggregateBase(orderAggregate.When)
-//	base.SetType(OrderAggregateType)
-//	orderAggregate.AggregateBase = base
-//	return orderAggregate
-//}
 func NewAggregateBase(when when) *AggregateBase {
 	if when == nil {
 		return nil

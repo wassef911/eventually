@@ -15,11 +15,11 @@ type Config struct {
 	Pretty      bool   `mapstructure:"pretty"`
 }
 
-func NewElasticClient(cfg Config) (*v7.Client, error) {
+func NewElasticClient(config Config) (*v7.Client, error) {
 	client, err := v7.NewClient(
-		v7.SetURL(cfg.URL),
-		v7.SetSniff(cfg.Sniff),
-		v7.SetGzip(cfg.Gzip),
+		v7.SetURL(config.URL),
+		v7.SetSniff(config.Sniff),
+		v7.SetGzip(config.Gzip),
 	)
 	if err != nil {
 		return nil, errors.Wrap(err, "v7.NewClient")

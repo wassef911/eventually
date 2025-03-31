@@ -20,19 +20,19 @@ import (
 type mongoProjection struct {
 	log       logger.Logger
 	db        *esdb.Client
-	cfg       *config.Config
-	mongoRepo repository.OrderMongoRepository
+	config    *config.Config
+	mongoRepo repository.MongoRepository
 }
 
-func NewOrderProjection(log logger.Logger, db *esdb.Client, mongoRepo repository.OrderMongoRepository, cfg *config.Config) *mongoProjection {
-	return &mongoProjection{log: log, db: db, mongoRepo: mongoRepo, cfg: cfg}
+func NewOrderProjection(log logger.Logger, db *esdb.Client, mongoRepo repository.MongoRepository, config *config.Config) *mongoProjection {
+	return &mongoProjection{log: log, db: db, mongoRepo: mongoRepo, config: config}
 }
 
 type Worker func(ctx context.Context, stream *esdb.PersistentSubscription, workerID int) error
 
 func (o *mongoProjection) Subscribe(ctx context.Context, prefixes []string, poolSize int, worker Worker) error {
 
-	err := o.db.CreatePersistentSubscriptionAll(ctx, o.cfg.Subscriptions.MongoProjectionGroupName, esdb.PersistentAllSubscriptionOptions{
+	err := o.db.CreatePersistentSubscriptionAll(ctx, o.config.Subscriptions.MongoProjectionGroupName, esdb.PersistentAllSubscriptionOptions{
 		Filter: &esdb.SubscriptionFilter{Type: esdb.StreamFilterType, Prefixes: prefixes},
 	})
 	if err != nil {
@@ -44,7 +44,7 @@ func (o *mongoProjection) Subscribe(ctx context.Context, prefixes []string, pool
 	stream, err := o.db.ConnectToPersistentSubscription(
 		ctx,
 		constants.EsAll,
-		o.cfg.Subscriptions.MongoProjectionGroupName,
+		o.config.Subscriptions.MongoProjectionGroupName,
 		esdb.ConnectToPersistentSubscriptionOptions{},
 	)
 	if err != nil {
@@ -85,7 +85,7 @@ func (o *mongoProjection) processSingleEvent(
 ) error {
 	o.log.ProjectionEvent(
 		constants.MongoProjection,
-		o.cfg.Subscriptions.MongoProjectionGroupName,
+		o.config.Subscriptions.MongoProjectionGroupName,
 		event,
 		workerID,
 	)

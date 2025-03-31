@@ -12,7 +12,7 @@ type commandHandler[T any] interface {
 	Handle(ctx context.Context, command T) error
 }
 type baseCommandHandler struct {
-	log logger.Logger
-	cfg *config.Config
-	es  store.AggregateStore
+	log    logger.Logger
+	config *config.Config
+	es     store.AggregateStore
 }

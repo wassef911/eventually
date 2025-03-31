@@ -24,13 +24,13 @@ type SearchOrdersQueryHandler interface {
 
 type searchOrdersHandler struct {
 	log               logger.Logger
-	cfg               *config.Config
+	config            *config.Config
 	es                store.AggregateStore
 	elasticRepository repository.ElasticOrderRepository
 }
 
-func NewSearchOrdersHandler(log logger.Logger, cfg *config.Config, es store.AggregateStore, elasticRepository repository.ElasticOrderRepository) *searchOrdersHandler {
-	return &searchOrdersHandler{log: log, cfg: cfg, es: es, elasticRepository: elasticRepository}
+func NewSearchOrdersHandler(log logger.Logger, config *config.Config, es store.AggregateStore, elasticRepository repository.ElasticOrderRepository) *searchOrdersHandler {
+	return &searchOrdersHandler{log: log, config: config, es: es, elasticRepository: elasticRepository}
 }
 
 func (s *searchOrdersHandler) Handle(ctx context.Context, query *SearchOrdersQuery) (*dto.OrderSearchResponseDto, error) {
@@ -47,13 +47,13 @@ type GetOrderByIDQueryHandler interface {
 
 type getOrderByIDHandler struct {
 	log       logger.Logger
-	cfg       *config.Config
+	config    *config.Config
 	es        store.AggregateStore
 	mongoRepo repository.OrderMongoRepository
 }
 
-func NewGetOrderByIDHandler(log logger.Logger, cfg *config.Config, es store.AggregateStore, mongoRepo repository.OrderMongoRepository) *getOrderByIDHandler {
-	return &getOrderByIDHandler{log: log, cfg: cfg, es: es, mongoRepo: mongoRepo}
+func NewGetOrderByIDHandler(log logger.Logger, config *config.Config, es store.AggregateStore, mongoRepo repository.OrderMongoRepository) *getOrderByIDHandler {
+	return &getOrderByIDHandler{log: log, config: config, es: es, mongoRepo: mongoRepo}
 }
 
 func (q *getOrderByIDHandler) Handle(ctx context.Context, query *GetOrderByIDQuery) (*models.OrderProjection, error) {
