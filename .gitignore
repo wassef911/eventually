@@ -28,3 +28,4 @@ main
 config/config.yml
 config/config.yaml
 src
+deployments/base/configs/secrets.yaml

@@ -30,10 +30,10 @@ services:
       - "2113:2113"
     volumes:
       - type: volume
-        source: eventstore_data
+        source: eventstore-data
         target: /var/lib/eventstore
       - type: volume
-        source: eventstore_logs
+        source: eventstore-logs
         target: /var/log/eventstore
 
   mongodb:
@@ -45,7 +45,7 @@ services:
     expose:
       - "27017"
     volumes:
-      - mongodb_data:/data/db
+      - mongodb-data:/data/db
 
   jaeger:
     restart: always
@@ -79,8 +79,8 @@ services:
       - "9200:9200"
 
 volumes:
-  mongodb_data:
-  eventstore_data:
-  eventstore_logs:
+  mongodb-data:
+  eventstore-data:
+  eventstore-logs:
   elastic-data01:
     driver: local
