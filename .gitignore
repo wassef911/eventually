@@ -27,3 +27,4 @@ go.work.sum
 main
 config/config.yml
 config/config.yaml
+src

@@ -1,9 +1,12 @@
 .PHONY:
 
-dev:
+start:
 	@echo Starting dev docker compose
 	docker-compose -f docker-compose.yaml up -d --build
 	docker-compose -f docker-compose.yaml logs -f app
+
+stop:
+	docker-compose -f docker-compose.yaml down
 
 test:
 	@echo Starting test
