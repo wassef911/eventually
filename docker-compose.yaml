@@ -14,6 +14,9 @@ services:
       - node01
     volumes:
       - .:/app
+    env_file:
+      - .env
+
   eventstore:
     image: ghcr.io/kurrent-io/eventstore:23.10.4-alpine
     environment:

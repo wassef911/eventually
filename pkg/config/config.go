@@ -1,7 +1,7 @@
 package config
 
 import (
-	"flag"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -44,19 +44,60 @@ type ElasticIndexes struct {
 }
 
 func New() (*Config, error) {
-	var configPath string
-	flag.StringVar(&configPath, "config", "cmd/server/config.yaml", "path to config file")
+	// Set up viper to read from environment variables
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// Bind all environent variables
+	bindEnvVars()
 
 	config := &Config{}
-	viper.SetConfigType("yaml")
-	viper.SetConfigFile(configPath)
-
-	if err := viper.ReadInConfig(); err != nil {
-		return nil, errors.Wrap(err, "viper.ReadInConfig")
-	}
-
 	if err := viper.Unmarshal(config); err != nil {
 		return nil, errors.Wrap(err, "viper.Unmarshal")
 	}
 	return config, nil
+}
+func bindEnvVars() {
+	// Service Configuration
+	viper.BindEnv("servicename", "SERVICE_NAME") // matches mapstructure:"servicename"
+	viper.BindEnv("port", "PORT")
+	viper.BindEnv("development", "DEVELOPMENT")
+	viper.BindEnv("basepath", "BASE_PATH")
+
+	// Logger Configuration
+	viper.BindEnv("logger.level", "LOGGER_LEVEL")
+	viper.BindEnv("logger.debug", "LOGGER_DEBUG")
+	viper.BindEnv("logger.encoder", "LOGGER_ENCODER")
+
+	// MongoDB Configuration
+	viper.BindEnv("mongo.uri", "MONGO_URI")
+	viper.BindEnv("mongo.user", "MONGO_USER")
+	viper.BindEnv("mongo.password", "MONGO_PASSWORD")
+	viper.BindEnv("mongo.db", "MONGO_DB")
+	viper.BindEnv("mongocollections.orders", "MONGO_COLLECTIONS_ORDERS")
+
+	// Jaeger Configuration
+	viper.BindEnv("jaeger.enable", "JAEGER_ENABLE")
+	viper.BindEnv("jaeger.servicename", "JAEGER_SERVICE_NAME")
+	viper.BindEnv("jaeger.hostport", "JAEGER_HOST_PORT")
+	viper.BindEnv("jaeger.logspans", "JAEGER_LOG_SPANS")
+
+	// EventStore Configuration
+	viper.BindEnv("eventstoreconfig.connectionstring", "EVENTSTORE_CONFIG_CONNECTION_STRING")
+
+	// Subscriptions Configuration
+	viper.BindEnv("subscriptions.poolsize", "SUBSCRIPTIONS_POOL_SIZE")
+	viper.BindEnv("subscriptions.orderprefix", "SUBSCRIPTIONS_ORDER_PREFIX")
+	viper.BindEnv("subscriptions.mongoprojectiongroupname", "SUBSCRIPTIONS_MONGO_PROJECTION_GROUP_NAME")
+	viper.BindEnv("subscriptions.elasticprojectiongroupname", "SUBSCRIPTIONS_ELASTIC_PROJECTION_GROUP_NAME")
+
+	// ElasticSearch Configuration
+	viper.BindEnv("elastic.url", "ELASTIC_URL")
+	viper.BindEnv("elastic.sniff", "ELASTIC_SNIFF")
+	viper.BindEnv("elastic.gzip", "ELASTIC_GZIP")
+	viper.BindEnv("elastic.explain", "ELASTIC_EXPLAIN")
+	viper.BindEnv("elastic.fetchsource", "ELASTIC_FETCH_SOURCE")
+	viper.BindEnv("elastic.version", "ELASTIC_VERSION")
+	viper.BindEnv("elastic.pretty", "ELASTIC_PRETTY")
+	viper.BindEnv("elasticindexes.orders", "ELASTIC_INDEXES_ORDERS")
 }

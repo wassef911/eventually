@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-config
+data:
+  SERVICE_NAME: "delivery"
+  PORT: ":5007"
+  DEVELOPMENT: "true"
+  BASE_PATH: "/api"
+
+  LOGGER_LEVEL: "debug"
+  LOGGER_DEBUG: "true"
+  LOGGER_ENCODER: "console"
+
+  MONGO_URI: "mongodb://mongodb:27017"
+  MONGO_USER: "admin"
+  MONGO_PASSWORD: "admin"
+  MONGO_DB: "orders"
+  MONGO_COLLECTIONS_ORDERS: "orders"
+
+  JAEGER_ENABLE: "true"
+  JAEGER_SERVICE_NAME: "delivery"
+  JAEGER_HOST_PORT: "jaeger:6831"
+  JAEGER_LOG_SPANS: "false"
+
+  EVENTSTORE_CONFIG_CONNECTION_STRING: "esdb://eventstore:2113?tls=false"
+
+  SUBSCRIPTIONS_POOL_SIZE: "60"
+  SUBSCRIPTIONS_ORDER_PREFIX: "order-"
+  SUBSCRIPTIONS_MONGO_PROJECTION_GROUP_NAME: "orders"
+  SUBSCRIPTIONS_ELASTIC_PROJECTION_GROUP_NAME: "order_elastic"
+
+  ELASTIC_URL: "http://node01:9200"
+  ELASTIC_SNIFF: "false"
+  ELASTIC_GZIP: "true"
+  ELASTIC_EXPLAIN: "true"
+  ELASTIC_FETCH_SOURCE: "true"
+  ELASTIC_VERSION: "true"
+  ELASTIC_PRETTY: "true"
+  ELASTIC_INDEXES_ORDERS: "orders"
