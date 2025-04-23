@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Launch API",
+        "type": "go",
+        "request": "launch",
+        "mode": "debug",
+        "program": "${workspaceFolder}/cmd/server",
+        "env": {
+          "GO_ENV": "development",
+        },
+        "showLog": true,
+        "trace": "verbose"
+      }
+    ]
+  }

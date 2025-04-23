@@ -85,7 +85,7 @@ func (o *elasticProjection) processSingleEvent(
 ) error {
 	o.log.ProjectionEvent(
 		constants.ElasticProjection,
-		o.config.Subscriptions.MongoProjectionGroupName,
+		o.config.Subscriptions.ElasticProjectionGroupName,
 		event,
 		workerID,
 	)

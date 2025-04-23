@@ -32,19 +32,13 @@ services:
       - "1113:1113"
       - "2113:2113"
     volumes:
-      - type: volume
-        source: eventstore-data
-        target: /var/lib/eventstore
-      - type: volume
-        source: eventstore-logs
-        target: /var/log/eventstore
+      - eventstore-data:/var/lib/eventstore
+      - eventstore-logs:/var/log/eventstore
 
   mongodb:
     image: mongo:latest
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
-      MONGO_INITDB_DATABASE: orders
+    env_file:
+      - .env
     expose:
       - "27017"
     volumes:

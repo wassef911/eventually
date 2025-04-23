@@ -71,9 +71,9 @@ func bindEnvVars() {
 
 	// MongoDB Configuration
 	viper.BindEnv("mongo.uri", "MONGO_URI")
-	viper.BindEnv("mongo.user", "MONGO_USER")
-	viper.BindEnv("mongo.password", "MONGO_PASSWORD")
-	viper.BindEnv("mongo.db", "MONGO_DB")
+	viper.BindEnv("mongo.user", "MONGO_INITDB_ROOT_USERNAME")
+	viper.BindEnv("mongo.password", "MONGO_INITDB_ROOT_PASSWORD")
+	viper.BindEnv("mongo.db", "MONGO_INITDB_DATABASE")
 	viper.BindEnv("mongocollections.orders", "MONGO_COLLECTIONS_ORDERS")
 
 	// Jaeger Configuration
