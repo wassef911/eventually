@@ -188,7 +188,7 @@ func (s *Server) setupServicesAndProjections(ctx context.Context) error {
 
 func (s *Server) startProjections(ctx context.Context, db esdb.Client, mongoRepo repository.MongoRepository, elasticRepo repository.ElasticRepository) error {
 	mongoProjection := mongo.NewOrderProjection(s.log, &db, mongoRepo, s.config)
-	elasticProjection := elastic.NewElasticProjection(s.log, &db, &elasticRepo, s.config)
+	elasticProjection := elastic.NewElasticProjection(s.log, &db, elasticRepo, s.config)
 
 	errCh := make(chan error, 2)
 

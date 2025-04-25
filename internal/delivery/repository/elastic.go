@@ -33,7 +33,7 @@ func NewElasticRepository(log logger.Logger, config *config.Config, elasticClien
 	return &ElasticRepository{log: log, config: config, elasticClient: elasticClient}
 }
 
-func (e *ElasticRepository) IndexOrder(ctx context.Context, order *models.OrderProjection) error {
+func (e ElasticRepository) IndexOrder(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticRepository.IndexOrder")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
@@ -47,7 +47,7 @@ func (e *ElasticRepository) IndexOrder(ctx context.Context, order *models.OrderP
 	return nil
 }
 
-func (e *ElasticRepository) GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error) {
+func (e ElasticRepository) GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticRepository.GetByID")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", orderID))
@@ -73,7 +73,7 @@ func (e *ElasticRepository) GetByID(ctx context.Context, orderID string) (*model
 	return &order, nil
 }
 
-func (e *ElasticRepository) UpdateOrder(ctx context.Context, order *models.OrderProjection) error {
+func (e ElasticRepository) UpdateOrder(ctx context.Context, order *models.OrderProjection) error {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticRepository.UpdateShoppingCart")
 	defer span.Finish()
 	span.LogFields(log.String("OrderID", order.OrderID))
@@ -87,7 +87,7 @@ func (e *ElasticRepository) UpdateOrder(ctx context.Context, order *models.Order
 	return nil
 }
 
-func (e *ElasticRepository) Search(ctx context.Context, text string, pq *utils.Pagination) (*dto.OrderSearchResponseDto, error) {
+func (e ElasticRepository) Search(ctx context.Context, text string, pq *utils.Pagination) (*dto.OrderSearchResponseDto, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "elasticRepository.Search")
 	defer span.Finish()
 	span.LogFields(log.String("Search", text))
