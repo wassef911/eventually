@@ -39,27 +39,15 @@ spec:
           mountPath: /usr/share/elasticsearch/data
         resources:
           requests:
-            cpu: "500m"
-            memory: "512Mi"
-          limits:
             cpu: "1"
             memory: "1Gi"
+          limits:
+            cpu: "1"
+            memory: "2Gi"
         securityContext:
           capabilities:
             add:
               - IPC_LOCK
-        readinessProbe:
-            httpGet:
-              path: /_cluster/health
-              port: 9200
-            initialDelaySeconds: 30
-            periodSeconds: 10
-        livenessProbe:
-          httpGet:
-            path: /_cluster/health
-            port: 9200
-          initialDelaySeconds: 30
-          periodSeconds: 10
 
   volumeClaimTemplates:
   - metadata:
@@ -68,4 +56,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 5Gi
+          storage: 4Gi

@@ -27,7 +27,7 @@ data:
   SUBSCRIPTIONS_MONGO_PROJECTION_GROUP_NAME: "orders"
   SUBSCRIPTIONS_ELASTIC_PROJECTION_GROUP_NAME: "order_elastic"
 
-  ELASTIC_URL: "http://node01:9200"
+  ELASTIC_URL: "http://elasticsearch:9200"
   ELASTIC_SNIFF: "false"
   ELASTIC_GZIP: "true"
   ELASTIC_EXPLAIN: "true"

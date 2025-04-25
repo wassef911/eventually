@@ -17,7 +17,7 @@ spec:
       imagePullSecrets:
         - name: github-registry-secret
       containers:
-        - name: backend
+        - name: api
           image: ghcr.io/wassef911/eventually:sha-7626bdc
           imagePullPolicy: Always
           envFrom:
@@ -36,15 +36,15 @@ spec:
           - name: MONGO_INITDB_ROOT_USERNAME
             valueFrom:
               secretKeyRef:
-                name: mongodb-secrets
+                name: mongodb-secret
                 key: root-username
           - name: MONGO_INITDB_ROOT_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: mongodb-secrets
+                name: mongodb-secret
                 key: root-password
           - name: MONGO_INITDB_DATABASE
             valueFrom:
               secretKeyRef:
-                name: mongodb-secrets
+                name: mongodb-secret
                 key: root-database

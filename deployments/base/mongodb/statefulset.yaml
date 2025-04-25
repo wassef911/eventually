@@ -24,26 +24,27 @@ spec:
         - name: MONGO_INITDB_ROOT_USERNAME
           valueFrom:
             secretKeyRef:
-              name: mongodb-secrets
+              name: mongodb-secret
               key: root-username
         - name: MONGO_INITDB_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mongodb-secrets
+              name: mongodb-secret
               key: root-password
         - name: MONGO_INITDB_DATABASE
           valueFrom:
             secretKeyRef:
-              name: mongodb-secrets
+              name: mongodb-secret
               key: root-database
         volumeMounts:
         - name: mongodb-data
           mountPath: /data/db
-        readinessProbe:
-          exec:
-            command:
-            - mongosh
-            - --eval
-            - "db.adminCommand('ping')"
-          initialDelaySeconds: 5
-          periodSeconds: 10
+
+  volumeClaimTemplates:
+  - metadata:
+      name: mongodb-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ] 
+      resources:
+        requests:
+          storage: 1Gi
