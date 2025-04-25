@@ -13,9 +13,6 @@ data:
   LOGGER_ENCODER: "console"
 
   MONGO_URI: "mongodb://mongodb:27017"
-  MONGO_USER: "admin"
-  MONGO_PASSWORD: "admin"
-  MONGO_DB: "orders"
   MONGO_COLLECTIONS_ORDERS: "orders"
 
   JAEGER_ENABLE: "true"

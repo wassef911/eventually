@@ -48,29 +48,19 @@ spec:
           capabilities:
             add:
               - IPC_LOCK
-    readinessProbe:
-      httpGet:
-        path: /_cluster/health
-        port: 9200
-      initialDelaySeconds: 30
-      periodSeconds: 10
-    livenessProbe:
-      httpGet:
-        path: /_cluster/health
-        port: 9200
-      initialDelaySeconds: 30
-      periodSeconds: 10
-      initContainers:
-      - name: increase-vm-max-map
-        image: busybox
-        command: ["sysctl", "-w", "vm.max_map_count=262144"]
-        securityContext:
-          privileged: true
-      - name: increase-fd-ulimit
-        image: busybox
-        command: ["sh", "-c", "ulimit -n 65536"]
-        securityContext:
-          privileged: true
+        readinessProbe:
+            httpGet:
+              path: /_cluster/health
+              port: 9200
+            initialDelaySeconds: 30
+            periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /_cluster/health
+            port: 9200
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
   volumeClaimTemplates:
   - metadata:
       name: elastic-data
