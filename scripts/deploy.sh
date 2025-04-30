@@ -7,4 +7,5 @@ KUSTOMIZE_DIR="${1:-.}"
 
 echo "Deploying using kustomize from: $KUSTOMIZE_DIR"
 
-kubectl apply -k "$KUSTOMIZE_DIR"
+cd $KUSTOMIZE_DIR
+kustomize build --enable-helm . | kubectl apply -f -

@@ -7,4 +7,5 @@ KUSTOMIZE_DIR="${1:-.}"
 
 echo "Tearing down resources from: $KUSTOMIZE_DIR"
 
-kubectl delete -k "$KUSTOMIZE_DIR"
+cd $KUSTOMIZE_DIR
+kustomize build --enable-helm . | kubectl delete -f -

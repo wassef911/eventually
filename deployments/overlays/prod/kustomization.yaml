@@ -1,11 +1,17 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-resources:
-  - ../../base
+# resources:
+#   # - ../../base
 
 patches:
   - path: patch-api-svc.yaml
     target:
       kind: Service
       name: api
+
+generators:
+- ./helm-loki/generator.yaml
+
+configurations:
+  - kustomizeconfig.yaml
