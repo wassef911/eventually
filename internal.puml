@@ -1,0 +1,778 @@
+@startuml
+namespace aggregate {
+    interface InterfaceOrderAggregate  {
+        - onOrderCreated(evt es.Event) error
+        - onOrderPaid(evt es.Event) error
+        - onOrderSubmitted(evt es.Event) error
+        - onOrderCompleted(evt es.Event) error
+        - onOrderCanceled(evt es.Event) error
+        - onShoppingCartUpdated(evt es.Event) error
+        - onChangeDeliveryAddress(evt es.Event) error
+
+        + When(evt es.Event) error
+        + CreateOrder(ctx context.Context, shopItems []*models.ShopItem, accountEmail string, deliveryAddress string) error
+        + PayOrder(ctx context.Context, payment models.Payment) error
+        + SubmitOrder(ctx context.Context) error
+        + UpdateShoppingCart(ctx context.Context, shopItems []*models.ShopItem) error
+        + CancelOrder(ctx context.Context, cancelReason string) error
+        + CompleteOrder(ctx context.Context, deliveryTimestamp time.Time) error
+        + ChangeDeliveryAddress(ctx context.Context, deliveryAddress string) error
+
+    }
+    class OrderAggregate << (S,Aquamarine) >> {
+        + Order *models.Order
+
+        - onOrderCreated(evt es.Event) error
+        - onOrderPaid(evt es.Event) error
+        - onOrderSubmitted(evt es.Event) error
+        - onOrderCompleted(evt es.Event) error
+        - onOrderCanceled(evt es.Event) error
+        - onShoppingCartUpdated(evt es.Event) error
+        - onChangeDeliveryAddress(evt es.Event) error
+
+        + When(evt es.Event) error
+        + CreateOrder(ctx context.Context, shopItems []*models.ShopItem, accountEmail string, deliveryAddress string) error
+        + PayOrder(ctx context.Context, payment models.Payment) error
+        + SubmitOrder(ctx context.Context) error
+        + UpdateShoppingCart(ctx context.Context, shopItems []*models.ShopItem) error
+        + CancelOrder(ctx context.Context, cancelReason string) error
+        + CompleteOrder(ctx context.Context, deliveryTimestamp time.Time) error
+        + ChangeDeliveryAddress(ctx context.Context, deliveryAddress string) error
+
+    }
+}
+"es.AggregateBase" *-- "aggregate.OrderAggregate"
+
+"aggregate.InterfaceOrderAggregate" <|-- "aggregate.OrderAggregate"
+"es.When" <|-- "aggregate.OrderAggregate"
+
+namespace api {
+    class Server << (S,Aquamarine) >> {
+        - config *config.Config
+        - log logger.Logger
+        - mw middlewares.MiddlewareManager
+        - orderService *services.OrderService
+        - validator *validator.Validate
+        - mongoClient *mongo.Client
+        - elasticClient *v7.Client
+        - echo *echo.Echo
+        - httpServer *http.Server
+        - doneCh <font color=blue>chan</font> <font color=blue>struct</font>{}
+
+        - validateConfig(ctx context.Context) error
+        - setupTracing() error
+        - setupDatabases(ctx context.Context) error
+        - setupMongoDB(ctx context.Context) error
+        - initEngine(ctx context.Context) error
+        - setupServicesAndProjections(ctx context.Context) error
+        - startProjections(ctx context.Context, db esdb.Client, mongoRepo repository.MongoRepository, elasticRepo repository.ElasticRepository) error
+        - configureServer()
+        - waitForShutdown(ctx context.Context)
+        - initMongoCollections(ctx context.Context)
+        - setupAPIHandlers()
+        - setupSwagger()
+        - setupGlobalMiddlewares()
+        - createGzipMiddleware() echo.MiddlewareFunc
+
+        + Run() error
+        + Shutdown(ctx context.Context) error
+
+    }
+}
+
+
+namespace commands {
+    class CancelOrderCommand << (S,Aquamarine) >> {
+        + CancelReason string
+
+    }
+    class ChangeDeliveryAddressCommand << (S,Aquamarine) >> {
+        + DeliveryAddress string
+
+    }
+    class CompleteOrderCommand << (S,Aquamarine) >> {
+        + DeliveryTimestamp time.Time
+
+    }
+    class CreateOrderCommand << (S,Aquamarine) >> {
+        + ShopItems []*models.ShopItem
+        + AccountEmail string
+        + DeliveryAddress string
+
+    }
+    class OrderCommand << (S,Aquamarine) >> {
+        + CreateOrder createOrderHandler
+        + OrderPaid payOrderCommandHandler
+        + SubmitOrder submitOrderCommandHandler
+        + UpdateOrder updateShoppingCartCommandHandler
+        + CancelOrder cancelOrderCommandHandler
+        + CompleteOrder completeOrderCommandHandler
+        + ChangeOrderDeliveryAddress changeDeliveryAddressCommandHandler
+
+    }
+    class PayOrderCommand << (S,Aquamarine) >> {
+    }
+    class SubmitOrderCommand << (S,Aquamarine) >> {
+    }
+    class UpdateShoppingCartCommand << (S,Aquamarine) >> {
+        + ShopItems []*models.ShopItem
+
+    }
+    class baseCommandHandler << (S,Aquamarine) >> {
+        - log logger.Logger
+        - config *config.Config
+        - es store.AggregateStore
+
+    }
+    class cancelOrderCommandHandler << (S,Aquamarine) >> {
+        + Handle(ctx context.Context, command *CancelOrderCommand) error
+
+    }
+    class changeDeliveryAddressCommandHandler << (S,Aquamarine) >> {
+        + Handle(ctx context.Context, command *ChangeDeliveryAddressCommand) error
+
+    }
+    interface commandHandler  {
+        + Handle(ctx context.Context, command T) error
+
+    }
+    class completeOrderCommandHandler << (S,Aquamarine) >> {
+        + Handle(ctx context.Context, command *CompleteOrderCommand) error
+
+    }
+    class createOrderHandler << (S,Aquamarine) >> {
+        + Handle(ctx context.Context, command *CreateOrderCommand) error
+
+    }
+    class payOrderCommandHandler << (S,Aquamarine) >> {
+        + Handle(ctx context.Context, command *PayOrderCommand) error
+
+    }
+    class submitOrderCommandHandler << (S,Aquamarine) >> {
+        + Handle(ctx context.Context, command *SubmitOrderCommand) error
+
+    }
+    class updateShoppingCartCommandHandler << (S,Aquamarine) >> {
+        + Handle(ctx context.Context, command *UpdateShoppingCartCommand) error
+
+    }
+}
+"es.BaseCommand" *-- "commands.CancelOrderCommand"
+"es.BaseCommand" *-- "commands.ChangeDeliveryAddressCommand"
+"es.BaseCommand" *-- "commands.CompleteOrderCommand"
+"es.BaseCommand" *-- "commands.CreateOrderCommand"
+"es.BaseCommand" *-- "commands.PayOrderCommand"
+"models.Payment" *-- "commands.PayOrderCommand"
+"es.BaseCommand" *-- "commands.SubmitOrderCommand"
+"es.BaseCommand" *-- "commands.UpdateShoppingCartCommand"
+"commands.baseCommandHandler" *-- "commands.cancelOrderCommandHandler"
+"commands.baseCommandHandler" *-- "commands.changeDeliveryAddressCommandHandler"
+"commands.baseCommandHandler" *-- "commands.completeOrderCommandHandler"
+"commands.baseCommandHandler" *-- "commands.createOrderHandler"
+"commands.baseCommandHandler" *-- "commands.payOrderCommandHandler"
+"commands.baseCommandHandler" *-- "commands.submitOrderCommandHandler"
+"commands.baseCommandHandler" *-- "commands.updateShoppingCartCommandHandler"
+
+
+namespace dto {
+    class CancelOrderReqDto << (S,Aquamarine) >> {
+        + CancelReason string
+
+    }
+    class ChangeDeliveryAddressReqDto << (S,Aquamarine) >> {
+        + DeliveryAddress string
+
+    }
+    class CreateOrderReqDto << (S,Aquamarine) >> {
+        + ShopItems []*models.ShopItem
+        + AccountEmail string
+        + DeliveryAddress string
+
+    }
+    class OrderResponseDto << (S,Aquamarine) >> {
+        + ID string
+        + OrderID string
+        + ShopItems []ShopItem
+        + AccountEmail string
+        + DeliveryAddress string
+        + CancelReason string
+        + TotalPrice float64
+        + DeliveredTime time.Time
+        + Created bool
+        + Paid bool
+        + Submitted bool
+        + Completed bool
+        + Canceled bool
+        + Payment Payment
+
+    }
+    class OrderSearchResponseDto << (S,Aquamarine) >> {
+        + Pagination Pagination
+        + Orders []OrderResponseDto
+
+    }
+    class Pagination << (S,Aquamarine) >> {
+        + TotalCount int64
+        + TotalPages int64
+        + Page int64
+        + Size int64
+        + HasMore bool
+
+    }
+    class Payment << (S,Aquamarine) >> {
+        + PaymentID string
+        + Timestamp time.Time
+
+    }
+    class ShopItem << (S,Aquamarine) >> {
+        + ID string
+        + Title string
+        + Description string
+        + Quantity uint64
+        + Price float64
+
+    }
+    class UpdateShoppingItemsReqDto << (S,Aquamarine) >> {
+        + ShopItems []*models.ShopItem
+
+    }
+}
+
+
+namespace elastic {
+    class elastic.Worker << (T, #FF7700) >>  {
+    }
+    class elasticProjection << (S,Aquamarine) >> {
+        - log logger.Logger
+        - db *esdb.Client
+        - config *config.Config
+        - elasticRepository repository.ElasticOrderRepository
+
+        - onOrderCreate(ctx context.Context, evt es.Event) error
+        - onOrderPaid(ctx context.Context, evt es.Event) error
+        - onSubmit(ctx context.Context, evt es.Event) error
+        - onShoppingCartUpdate(ctx context.Context, evt es.Event) error
+        - onCancel(ctx context.Context, evt es.Event) error
+        - onComplete(ctx context.Context, evt es.Event) error
+        - onDeliveryAddressChanged(ctx context.Context, evt es.Event) error
+        - processSingleEvent(ctx context.Context, stream *esdb.PersistentSubscription, event *esdb.ResolvedEvent, workerID int) error
+
+        + Subscribe(ctx context.Context, prefixes []string, poolSize int, worker Worker) error
+        + ProcessEvents(ctx context.Context, stream *esdb.PersistentSubscription, workerID int) error
+        + When(ctx context.Context, evt es.Event) error
+
+    }
+    class "<font color=blue>func</font>(context.Context, *esdb.PersistentSubscription, int) error" as fontcolorbluefuncfontcontextContextesdbPersistentSubscriptioninterror {
+        'This class was created so that we can correctly have an alias pointing to this name. Since it contains dots that can break namespaces
+    }
+}
+
+"es.Projection" <|-- "elastic.elasticProjection"
+
+namespace elasticsearch {
+    class Config << (S,Aquamarine) >> {
+        + URL string
+        + Sniff bool
+        + Gzip bool
+        + Explain bool
+        + FetchSource bool
+        + Version bool
+        + Pretty bool
+
+    }
+}
+
+
+namespace es {
+    interface Aggregate  {
+    }
+    class AggregateBase << (S,Aquamarine) >> {
+        - withAppliedEvents bool
+        - when when
+
+        + ID string
+        + Version int64
+        + AppliedEvents []Event
+        + UncommittedEvents []Event
+        + Type AggregateType
+
+        + SetID(id string) *AggregateBase
+        + GetID() string
+        + SetType(aggregateType AggregateType)
+        + GetType() AggregateType
+        + GetVersion() int64
+        + ClearUncommittedEvents()
+        + GetAppliedEvents() []Event
+        + SetAppliedEvents(events []Event)
+        + GetUncommittedEvents() []Event
+        + Load(events []Event) error
+        + Apply(event Event) error
+        + RaiseEvent(event Event) error
+        + ToSnapshot()
+        + String() string
+
+    }
+    interface AggregateRoot  {
+        + GetUncommittedEvents() []Event
+        + GetID() string
+        + SetID(id string) *AggregateBase
+        + GetVersion() int64
+        + ClearUncommittedEvents()
+        + ToSnapshot()
+        + SetType(aggregateType AggregateType)
+        + GetType() AggregateType
+        + SetAppliedEvents(events []Event)
+        + GetAppliedEvents() []Event
+        + RaiseEvent(event Event) error
+        + String() string
+
+    }
+    interface Apply  {
+        + Apply(event Event) error
+
+    }
+    class BaseCommand << (S,Aquamarine) >> {
+        + AggregateID string
+
+        + GetAggregateID() string
+
+    }
+    interface Command  {
+        + GetAggregateID() string
+
+    }
+    class Config << (S,Aquamarine) >> {
+        + SnapshotFrequency int64
+
+    }
+    class Event << (S,Aquamarine) >> {
+        + EventID string
+        + EventType string
+        + Data []byte
+        + Timestamp time.Time
+        + AggregateType AggregateType
+        + AggregateID string
+        + Version int64
+        + Metadata []byte
+
+        + ToEventData() esdb.EventData
+        + GetEventID() string
+        + GetTimeStamp() time.Time
+        + GetData() []byte
+        + SetData(data []byte) *Event
+        + GetJsonData(data <font color=blue>interface</font>{}) error
+        + SetJsonData(data <font color=blue>interface</font>{}) error
+        + GetEventType() string
+        + GetAggregateType() AggregateType
+        + SetAggregateType(aggregateType AggregateType)
+        + GetAggregateID() string
+        + GetVersion() int64
+        + SetVersion(aggregateVersion int64)
+        + GetMetadata() []byte
+        + SetMetadata(metaData <font color=blue>interface</font>{}) error
+        + GetJsonMetadata(metaData <font color=blue>interface</font>{}) error
+        + GetString() string
+        + String() string
+
+    }
+    interface HandleCommand  {
+        + HandleCommand(ctx context.Context, command Command) error
+
+    }
+    interface Load  {
+        + Load(events []Event) error
+
+    }
+    interface Projection  {
+        + When(ctx context.Context, evt Event) error
+
+    }
+    class Snapshot << (S,Aquamarine) >> {
+        + ID string
+        + Type AggregateType
+        + State []byte
+        + Version uint64
+
+    }
+    interface When  {
+        + When(event Event) error
+
+    }
+    class es.AggregateType << (T, #FF7700) >>  {
+    }
+    class es.EventType << (T, #FF7700) >>  {
+    }
+    class es.when << (T, #FF7700) >>  {
+    }
+}
+"es.AggregateRoot" *-- "es.Aggregate"
+"es.When" *-- "es.Aggregate"
+"es.Apply" *-- "es.AggregateRoot"
+"es.Load" *-- "es.AggregateRoot"
+
+"es.AggregateRoot" <|-- "es.AggregateBase"
+"es.Apply" <|-- "es.AggregateBase"
+"es.Load" <|-- "es.AggregateBase"
+"es.Command" <|-- "es.BaseCommand"
+"es.Command" <|-- "es.Event"
+
+namespace events {
+    class OrderCanceledEvent << (S,Aquamarine) >> {
+        + CancelReason string
+
+    }
+    class OrderCompletedEvent << (S,Aquamarine) >> {
+        + DeliveryTimestamp time.Time
+
+    }
+    class OrderCreatedEvent << (S,Aquamarine) >> {
+        + ShopItems []*models.ShopItem
+        + AccountEmail string
+        + DeliveryAddress string
+
+    }
+    class OrderDeliveryAddressChangedEvent << (S,Aquamarine) >> {
+        + DeliveryAddress string
+
+    }
+    class ShoppingCartUpdatedEvent << (S,Aquamarine) >> {
+        + ShopItems []*models.ShopItem
+
+    }
+}
+
+
+namespace eventstore {
+    class EventStoreConfig << (S,Aquamarine) >> {
+        + ConnectionString string
+
+    }
+}
+
+
+namespace handlers {
+    interface OrderHandlersI  {
+        + CreateOrder() echo.HandlerFunc
+        + PayOrder() echo.HandlerFunc
+        + SubmitOrder() echo.HandlerFunc
+        + UpdateShoppingCart() echo.HandlerFunc
+        + MapRoutes()
+        + GetOrderByID() echo.HandlerFunc
+        + Search() echo.HandlerFunc
+
+    }
+    class orderHandlers << (S,Aquamarine) >> {
+        - group *echo.Group
+        - log logger.Logger
+        - mw middlewares.MiddlewareManager
+        - config *config.Config
+        - v *validator.Validate
+        - os *services.OrderService
+
+        + MapRoutes()
+        + CreateOrder() echo.HandlerFunc
+        + PayOrder() echo.HandlerFunc
+        + SubmitOrder() echo.HandlerFunc
+        + CancelOrder() echo.HandlerFunc
+        + CompleteOrder() echo.HandlerFunc
+        + ChangeDeliveryAddress() echo.HandlerFunc
+        + UpdateShoppingCart() echo.HandlerFunc
+        + GetOrderByID() echo.HandlerFunc
+        + Search() echo.HandlerFunc
+
+    }
+}
+
+"handlers.OrderHandlersI" <|-- "handlers.orderHandlers"
+
+namespace middlewares {
+    interface MiddlewareManager  {
+        + Apply(next echo.HandlerFunc) echo.HandlerFunc
+
+    }
+    class middlewareManager << (S,Aquamarine) >> {
+        - log logger.Logger
+        - config *config.Config
+
+        + Apply(next echo.HandlerFunc) echo.HandlerFunc
+
+    }
+}
+
+"middlewares.MiddlewareManager" <|-- "middlewares.middlewareManager"
+
+namespace models {
+    class Order << (S,Aquamarine) >> {
+        + ID string
+        + ShopItems []*ShopItem
+        + AccountEmail string
+        + DeliveryAddress string
+        + CancelReason string
+        + TotalPrice float64
+        + DeliveredTime time.Time
+        + Paid bool
+        + Submitted bool
+        + Completed bool
+        + Canceled bool
+        + Payment Payment
+
+        + String() string
+
+    }
+    class OrderProjection << (S,Aquamarine) >> {
+        + ID string
+        + OrderID string
+        + ShopItems []*ShopItem
+        + AccountEmail string
+        + DeliveryAddress string
+        + CancelReason string
+        + TotalPrice float64
+        + DeliveredTime time.Time
+        + Paid bool
+        + Submitted bool
+        + Completed bool
+        + Canceled bool
+        + Payment Payment
+
+        + String() string
+
+    }
+    class Payment << (S,Aquamarine) >> {
+        + PaymentID string
+        + Timestamp time.Time
+
+        + String() string
+
+    }
+    class ShopItem << (S,Aquamarine) >> {
+        + ID string
+        + Title string
+        + Description string
+        + Quantity uint64
+        + Price float64
+
+        + String() string
+
+    }
+}
+
+
+namespace mongo {
+    class mongo.Worker << (T, #FF7700) >>  {
+    }
+    class mongoProjection << (S,Aquamarine) >> {
+        - log logger.Logger
+        - db *esdb.Client
+        - config *config.Config
+        - mongoRepo repository.MongoRepository
+
+        - onOrderCreate(ctx context.Context, evt es.Event) error
+        - onOrderPaid(ctx context.Context, evt es.Event) error
+        - onSubmit(ctx context.Context, evt es.Event) error
+        - onShoppingCartUpdate(ctx context.Context, evt es.Event) error
+        - onCancel(ctx context.Context, evt es.Event) error
+        - onCompleted(ctx context.Context, evt es.Event) error
+        - onDeliveryAddressChanged(ctx context.Context, evt es.Event) error
+        - processSingleEvent(ctx context.Context, stream *esdb.PersistentSubscription, event *esdb.ResolvedEvent, workerID int) error
+
+        + Subscribe(ctx context.Context, prefixes []string, poolSize int, worker Worker) error
+        + ProcessEvents(ctx context.Context, stream *esdb.PersistentSubscription, workerID int) error
+        + When(ctx context.Context, evt es.Event) error
+
+    }
+    class "<font color=blue>func</font>(context.Context, *esdb.PersistentSubscription, int) error" as fontcolorbluefuncfontcontextContextesdbPersistentSubscriptioninterror {
+        'This class was created so that we can correctly have an alias pointing to this name. Since it contains dots that can break namespaces
+    }
+}
+
+"es.Projection" <|-- "mongo.mongoProjection"
+
+namespace mongodb {
+    class Config << (S,Aquamarine) >> {
+        + URI string
+        + User string
+        + Password string
+        + Db string
+
+    }
+}
+
+
+namespace queries {
+    class GetOrderByIDQuery << (S,Aquamarine) >> {
+        + ID string
+
+    }
+    interface GetOrderByIDQueryHandler  {
+        + Handle(ctx context.Context, command *GetOrderByIDQuery) (*models.OrderProjection, error)
+
+    }
+    class OrderQueries << (S,Aquamarine) >> {
+        + GetOrderByID GetOrderByIDQueryHandler
+        + SearchOrders SearchOrdersQueryHandler
+
+    }
+    class SearchOrdersQuery << (S,Aquamarine) >> {
+        + SearchText string
+        + Pq *utils.Pagination
+
+    }
+    interface SearchOrdersQueryHandler  {
+        + Handle(ctx context.Context, command *SearchOrdersQuery) (*dto.OrderSearchResponseDto, error)
+
+    }
+    class getOrderByIDHandler << (S,Aquamarine) >> {
+        - log logger.Logger
+        - config *config.Config
+        - es store.AggregateStore
+        - mongoRepo repository.OrderMongoRepository
+
+        + Handle(ctx context.Context, query *GetOrderByIDQuery) (*models.OrderProjection, error)
+
+    }
+    class searchOrdersHandler << (S,Aquamarine) >> {
+        - log logger.Logger
+        - config *config.Config
+        - es store.AggregateStore
+        - elasticRepository repository.ElasticOrderRepository
+
+        + Handle(ctx context.Context, query *SearchOrdersQuery) (*dto.OrderSearchResponseDto, error)
+
+    }
+}
+
+"queries.GetOrderByIDQueryHandler" <|-- "queries.getOrderByIDHandler"
+"queries.SearchOrdersQueryHandler" <|-- "queries.searchOrdersHandler"
+
+namespace repository {
+    interface ElasticOrderRepository  {
+        + IndexOrder(ctx context.Context, order *models.OrderProjection) error
+        + GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error)
+        + UpdateOrder(ctx context.Context, order *models.OrderProjection) error
+        + Search(ctx context.Context, text string, pq *utils.Pagination) (*dto.OrderSearchResponseDto, error)
+
+    }
+    class ElasticRepository << (S,Aquamarine) >> {
+        - log logger.Logger
+        - config *config.Config
+        - elasticClient *v7.Client
+
+        + IndexOrder(ctx context.Context, order *models.OrderProjection) error
+        + GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error)
+        + UpdateOrder(ctx context.Context, order *models.OrderProjection) error
+        + Search(ctx context.Context, text string, pq *utils.Pagination) (*dto.OrderSearchResponseDto, error)
+
+    }
+    class MongoRepository << (S,Aquamarine) >> {
+        - log logger.Logger
+        - config *config.Config
+        - db *mongo.Client
+
+        - getOrdersCollection() *mongo.Collection
+
+        + Insert(ctx context.Context, order *models.OrderProjection) (string, error)
+        + GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error)
+        + UpdateOrder(ctx context.Context, order *models.OrderProjection) error
+        + UpdateCancel(ctx context.Context, order *models.OrderProjection) error
+        + UpdatePayment(ctx context.Context, order *models.OrderProjection) error
+        + Complete(ctx context.Context, order *models.OrderProjection) error
+        + UpdateDeliveryAddress(ctx context.Context, order *models.OrderProjection) error
+        + UpdateSubmit(ctx context.Context, order *models.OrderProjection) error
+
+    }
+    interface OrderMongoRepository  {
+        + Insert(ctx context.Context, order *models.OrderProjection) (string, error)
+        + GetByID(ctx context.Context, orderID string) (*models.OrderProjection, error)
+        + UpdateOrder(ctx context.Context, order *models.OrderProjection) error
+        + UpdateCancel(ctx context.Context, order *models.OrderProjection) error
+        + UpdatePayment(ctx context.Context, order *models.OrderProjection) error
+        + Complete(ctx context.Context, order *models.OrderProjection) error
+        + UpdateDeliveryAddress(ctx context.Context, order *models.OrderProjection) error
+        + UpdateSubmit(ctx context.Context, order *models.OrderProjection) error
+
+    }
+}
+
+"repository.ElasticOrderRepository" <|-- "repository.ElasticRepository"
+"repository.OrderMongoRepository" <|-- "repository.MongoRepository"
+
+namespace service {
+    class OrderService << (S,Aquamarine) >> {
+        + Commands *commands.OrderCommand
+        + Queries *queries.OrderQueries
+
+    }
+}
+
+
+namespace store {
+    interface AggregateStore  {
+        + Load(ctx context.Context, aggregate es.Aggregate) error
+        + Save(ctx context.Context, aggregate es.Aggregate) error
+        + Exists(ctx context.Context, streamID string) error
+
+    }
+    interface EventStore  {
+        + SaveEvents(ctx context.Context, streamID string, events []es.Event) error
+        + LoadEvents(ctx context.Context, streamID string) ([]es.Event, error)
+
+    }
+    class aggregateStore << (S,Aquamarine) >> {
+        - log logger.Logger
+        - db *esdb.Client
+
+        + Load(ctx context.Context, aggregate es.Aggregate) error
+        + Save(ctx context.Context, aggregate es.Aggregate) error
+        + Exists(ctx context.Context, streamID string) error
+
+    }
+    class eventStore << (S,Aquamarine) >> {
+        - log logger.Logger
+        - db *esdb.Client
+
+        + SaveEvents(ctx context.Context, streamID string, events []es.Event) error
+        + LoadEvents(ctx context.Context, streamID string) ([]es.Event, error)
+
+    }
+}
+
+"store.AggregateStore" <|-- "store.aggregateStore"
+"store.EventStore" <|-- "store.eventStore"
+
+namespace tracing {
+    class Config << (S,Aquamarine) >> {
+        + ServiceName string
+        + HostPort string
+        + LogSpans bool
+
+    }
+}
+
+
+namespace utils {
+    class Pagination << (S,Aquamarine) >> {
+        + Size int
+        + Page int
+        + OrderBy string
+
+        + SetSize(sizeQuery string) error
+        + SetPage(pageQuery string) error
+        + SetOrderBy(orderByQuery string)
+        + GetOffset() int
+        + GetLimit() int
+        + GetOrderBy() string
+        + GetPage() int
+        + GetSize() int
+        + GetTotalPages(totalCount int) int
+        + GetHasMore(totalCount int) bool
+
+    }
+}
+
+
+"__builtin__.string" #.. "es.AggregateType"
+"__builtin__.string" #.. "es.EventType"
+"elastic.fontcolorbluefuncfontcontextContextesdbPersistentSubscriptioninterror" #.. "elastic.Worker"
+"es.<font color=blue>func</font>(Event) error" #.. "es.when"
+"mongo.fontcolorbluefuncfontcontextContextesdbPersistentSubscriptioninterror" #.. "mongo.Worker"
+@enduml
