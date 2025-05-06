@@ -9,7 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/EventStore/EventStore-Client-Go/esdb"
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -88,9 +87,34 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	if err := s.setupServicesAndProjections(ctx); err != nil {
+	mongoRepo := repository.NewMongoRepository(s.log, s.config, s.mongoClient)
+	elasticRepo := repository.NewElasticRepository(s.log, s.config, s.elasticClient)
+
+	db, err := eventstore.NewEventStoreClient(s.config.EventStoreConfig)
+	if err != nil {
 		return err
 	}
+	defer db.Close()
+
+	aggregateStore := store.NewAggregateStore(s.log, db)
+	s.orderService = service.New(s.log, s.config, aggregateStore, mongoRepo, elasticRepo)
+	mongoProjection := mongo.NewOrderProjection(s.log, db, *mongoRepo, s.config)
+	elasticProjection := elastic.NewElasticProjection(s.log, db, elasticRepo, s.config)
+	go func() {
+		err := mongoProjection.Subscribe(ctx, []string{s.config.Subscriptions.OrderPrefix}, s.config.Subscriptions.PoolSize, mongoProjection.ProcessEvents)
+		if err != nil {
+			s.log.Errorf("(orderProjection.Subscribe) err: {%v}", err)
+			stop()
+		}
+	}()
+
+	go func() {
+		err := elasticProjection.Subscribe(ctx, []string{s.config.Subscriptions.OrderPrefix}, s.config.Subscriptions.PoolSize, elasticProjection.ProcessEvents)
+		if err != nil {
+			s.log.Errorf("(elasticProjection.Subscribe) err: {%v}", err)
+			stop()
+		}
+	}()
 
 	s.configureServer()
 	s.log.Infof("%s is listening on PORT: {%s}", s.config.ServiceName, s.config.Port)
@@ -164,48 +188,6 @@ func (s *Server) initEngine(ctx context.Context) error {
 	s.log.Infof("Elasticsearch version {%s}", esVersion)
 
 	return nil
-}
-
-func (s *Server) setupServicesAndProjections(ctx context.Context) error {
-	mongoRepo := repository.NewMongoRepository(s.log, s.config, s.mongoClient)
-	elasticRepo := repository.NewElasticRepository(s.log, s.config, s.elasticClient)
-
-	db, err := eventstore.NewEventStoreClient(s.config.EventStoreConfig)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	aggregateStore := store.NewAggregateStore(s.log, db)
-	s.orderService = service.New(s.log, s.config, aggregateStore, mongoRepo, elasticRepo)
-
-	if err := s.startProjections(ctx, *db, *mongoRepo, *elasticRepo); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Server) startProjections(ctx context.Context, db esdb.Client, mongoRepo repository.MongoRepository, elasticRepo repository.ElasticRepository) error {
-	mongoProjection := mongo.NewOrderProjection(s.log, &db, mongoRepo, s.config)
-	elasticProjection := elastic.NewElasticProjection(s.log, &db, elasticRepo, s.config)
-
-	errCh := make(chan error, 2)
-
-	go func() {
-		errCh <- mongoProjection.Subscribe(ctx, []string{s.config.Subscriptions.OrderPrefix}, s.config.Subscriptions.PoolSize, mongoProjection.ProcessEvents)
-	}()
-
-	go func() {
-		errCh <- elasticProjection.Subscribe(ctx, []string{s.config.Subscriptions.OrderPrefix}, s.config.Subscriptions.PoolSize, elasticProjection.ProcessEvents)
-	}()
-
-	select {
-	case err := <-errCh:
-		return err
-	case <-ctx.Done():
-		return nil
-	}
 }
 
 func (s *Server) configureServer() {
