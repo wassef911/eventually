@@ -11,8 +11,7 @@ patches:
       name: api
 
 generators:
-- ./helm-loki/generator.yaml
-- ./grafana/generator.yaml
+- ./loki/generator.yaml
 
 configurations:
   - kustomizeconfig.yaml

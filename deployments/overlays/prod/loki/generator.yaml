@@ -1,0 +1,9 @@
+apiVersion: builtin
+kind: HelmChartInflationGenerator
+metadata:
+  name: loki-stack
+name: loki-stack
+releaseName: loki-stack
+repo: https://grafana.github.io/helm-charts
+version: 2.9.10
+valuesFile: loki/values.yaml
