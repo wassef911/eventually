@@ -2,6 +2,7 @@ apiVersion: builtin
 kind: HelmChartInflationGenerator
 metadata:
   name: loki-stack
+  namespace: monitoring
 name: loki-stack
 releaseName: loki-stack
 repo: https://grafana.github.io/helm-charts

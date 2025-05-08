@@ -51,14 +51,14 @@ under /deployment
 │   │   ├── github-registry-secret.yaml
 │   │   ├── kustomization.yaml
 │   │   ├── mongodb-secret.yaml
-│   │   └── rbac                 <--- in progress as I learn more about cluster security
+│   │   └── rbac
 │   │       ├── clusterroles.yaml
 │   │       ├── clusterrolebindings.yaml
 │   │       ├── roles.yaml
 │   │       ├── rolebindings.yaml
 │   │       ├── serviceaccounts.yaml
 │   │       └── kustomization.yaml
-│   ├── hpc                      <--- optional if I'm on schedule
+│   ├── hpc
 │   │   ├── batch-operator
 │   │   ├── mpi-operator
 │   │   ├── gpu-operator

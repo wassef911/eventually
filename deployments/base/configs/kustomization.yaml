@@ -6,3 +6,5 @@ resources:
 - configmaps.yaml
 - github-registry-secret.yaml
 - mongodb-secret.yaml
+- policy.yaml
+- clusterroles.yaml

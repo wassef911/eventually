@@ -1,0 +1,31 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-prod-namespace
+spec:
+  validationFailureAction: Enforce
+  rules:
+  - name: enforce-prod-namespace
+    match:
+      resources:
+        kinds:
+        - "*"
+        namespaces:
+        - "!prod"
+        - "!dev"
+        - "!monitoring"
+        - "!kube-system"
+        - "!kyverno"
+    exclude:
+      resources:
+        annotations:
+          helm.sh/chart: "*"
+    validate:
+      message: "All resources must be in the [prod, dev, monitoring] namespaces"
+      pattern:
+        metadata:
+          namespace:
+            anyOf:
+            - "prod"
+            - "dev"
+            - "monitoring"
