@@ -1,110 +1,129 @@
-# Docs in progress, still an ongoing repo
+# Docs in progress, still an ongoing repo!
 
-#### platUML
+## Prerequisites
+
+- Docker
+- Docker Compose
+- go 1.24
+
+## Local Setup
+
+1. Copy `.env.example` to `.env`:
+   ```sh
+   cp .env.example .env
+   go mod download
+   ```
+
+2. Start the application:
+   ```sh
+   make start
+   ```
+
+3. To run tests:
+   ```sh
+   make test
+   ```
+
+## Swagger
+
+The REST API documentation is available at:  http://localhost:5007/swagger/index.html
+
+## Project Structure
+
+### Internal Structure (DDD Approach)
+
+The internal structure follows Domain-Driven Design (DDD) principles:
+
+```sh
+/internal
+    ├── api
+    │   ├── constants
+    │   ├── dto
+    │   ├── handlers
+    │   ├── middlewares
+    │   ├── server.go
+    │   └── utils
+    ├── delivery
+    │   ├── aggregate
+    │   ├── commands
+    │   ├── events
+    │   ├── models
+    │   ├── projections
+    │   ├── queries
+    │   ├── repository
+    │   └── services
+    └── infrastructure
+        ├── elasticsearch
+        ├── es
+        ├── eventstore
+        ├── mongodb
+        └── tracing
+```
+
+The structure separates concerns according to DDD layers:
+- `api`: Presentation layer handling HTTP requests/responses
+- `delivery`: Core domain logic and business rules
+- `infrastructure`: Technical implementation details and external integrations
+
+#### Plant UML:
 
 ![Puml](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/wassef911/eventually/refs/heads/main/internal.puml)
 
-will provide something more detailed later...
+---
 
-under /internal
-```sh
-├── api
-│   ├── constants
-│   ├── dto
-│   ├── handlers
-│   ├── middlewares
-│   ├── server.go
-│   └── utils
-├── delivery
-│   ├── aggregate
-│   ├── commands
-│   ├── events
-│   ├── models
-│   ├── projections
-│   ├── queries
-│   ├── repository
-│   └── services
-└── infrastructure
-    ├── elasticsearch
-    ├── es
-    ├── eventstore
-    ├── mongodb
-    └── tracing
-```
+### Cluster Setup Notes
 
+1. **Grafana Agent Operator**
+   Followed the [official documentation](https://grafana.com/docs/agent/latest/operator/getting-started/) for setup.
+   - Manually created Grafana CRDs as required by their installation process
+   - Modified Loki deployment to remove strict anti-affinity rules (could alternatively use `soft` anti-affinity)
 
-#### current cluster
+2. **Key Configuration**
+   - Kustomize overlays for environment-specific configurations, although only worked on a "prod" setup.
+   - Separate RBAC restrictions for **developer-base** access in production VS **sre**.
+   - A base cluster policy using **kyverno** to ensure all namespaced resources are in **[dev-prod-monitoring]**.
+
+3. **Observability Stack**
+   - Jaeger for distributed tracing
+   - Loki for log aggregation
+   - Grafana Agent for metrics collection
+
+#### Cluster Diagram
 ![current cluster](./diagram_cluster.png)
 
-
-#### trying to achieve:
-under /deployment
-
+#### Cluster Structure
 ```sh
-├── base
-│   ├── api
-│   │   ├── deployment.yaml
-│   │   ├── kustomization.yaml
-│   │   └── service.yaml
-│   ├── configs
-│   │   ├── configmaps.yaml
-│   │   ├── github-registry-secret.yaml
-│   │   ├── kustomization.yaml
-│   │   ├── mongodb-secret.yaml
-│   │   └── rbac
-│   │       ├── clusterroles.yaml
-│   │       ├── clusterrolebindings.yaml
-│   │       ├── roles.yaml
-│   │       ├── rolebindings.yaml
-│   │       ├── serviceaccounts.yaml
-│   │       └── kustomization.yaml
-│   ├── hpc
-│   │   ├── batch-operator
-│   │   ├── mpi-operator
-│   │   ├── gpu-operator
-│   │   ├── slurm
-│   │   └── kustomization.yaml
-│   ├── elasticsearch
-│   │   ├── kustomization.yaml
-│   │   ├── service.yaml
-│   │   └── statefulset.yaml
-│   ├── eventstore
-│   │   ├── kustomization.yaml
-│   │   ├── service.yaml
-│   │   └── statefulset.yaml
-│   ├── jaeger
-│   │   ├── deployment.yaml
-│   │   ├── kustomization.yaml
-│   │   └── service.yaml
-│   ├── kustomization.yaml
-│   └── mongodb                 <---- might swap it for a realistic setup using a known chart
-│       ├── kustomization.yaml
-│       ├── service.yaml
-│       └── statefulset.yaml
-└── overlays
-    └── prod
-        ├── charts
-        ├── grafana
-        ├── helm-loki
-        ├── kustomization.yaml
-        ├── kustomizeconfig.yaml
-        ├── patch-api-svc.yaml
-        ├── network-policies
-        ├── pod-security
-        └── resource-quotas
+    ├────── base
+    │   ├────── api
+    │   ├────── configs
+    │   │   ├────────── clusterroles.yaml
+    │   │   ├────────── configmaps.yaml
+    │   │   ├────────── github-registry-secret.yaml
+    │   │   ├────────── kustomization.yaml
+    │   │   ├────────── mongodb-secret.yaml
+    │   │   └────────── policy.yaml
+    │   ├────── elasticsearch
+    │   ├────── eventstore
+    │   ├────── ingress.yaml
+    │   ├────── jaeger
+    │   ├────── kustomization.yaml
+    │   └────── mongodb
+    ├────── overlays
+    │   └────── prod
+    │       ├────── charts
+    │       ├────────── kustomization.yaml
+    │       ├────────── kustomizeconfig.yaml
+    │       ├────── loki
+    │       │   ├────────── generator.yaml
+    │       │   └────────── values.yaml
+    │       └────── patches
+    │           ├────────── api-svc.yaml
+    │           └────────── restrict-developer-permissions.yaml
 ```
----
-### to mention in docs
-https://grafana.com/docs/agent/latest/operator/getting-started/
-
-* had to create Grafana CRDs by hand... (mentioned in their docs)
-
-* removed anti-affinity rules from Loki, but could've been turned soft
-
 
 ---
 ### TODO:
-- add loki?
-- add rbac?
+- add loki? DONE
+- add rbac/cluster policy? DONE
+- jaeger to grafana dashboard?
 - add svc mesh?
-- add argo?
