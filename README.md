@@ -120,10 +120,3 @@ The structure separates concerns according to DDD layers:
     │           ├────────── api-svc.yaml
     │           └────────── restrict-developer-permissions.yaml
 ```
-
----
-### TODO:
-- add loki? DONE
-- add rbac/cluster policy? DONE
-- jaeger to grafana dashboard?
-- add svc mesh?

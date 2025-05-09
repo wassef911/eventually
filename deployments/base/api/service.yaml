@@ -9,6 +9,6 @@ spec:
   selector:
     app: api
   ports:
-  - protocol: TCP
-    port: 5007
-    targetPort: 5007
+    - protocol: TCP
+      port: 5007
+      targetPort: 5007

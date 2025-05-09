@@ -1,31 +1,37 @@
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
 metadata:
-  name: enforce-prod-namespace
+  name: enforce-namespaces
+  annotations:
+    policies.kyverno.io/description: "Ensure all resources are deployed in namespaces"
+    policies.kyverno.io/subject: "Namespace"
+    policies.kyverno.io/audit-version: "v1.22.3"
+    policies.kyverno.io/enforce-version: "v1.22.3"
 spec:
   validationFailureAction: Enforce
   rules:
-  - name: enforce-prod-namespace
-    match:
-      resources:
-        kinds:
-        - "*"
-        namespaces:
-        - "!prod"
-        - "!dev"
-        - "!monitoring"
-        - "!kube-system"
-        - "!kyverno"
-    exclude:
-      resources:
-        annotations:
-          helm.sh/chart: "*"
-    validate:
-      message: "All resources must be in the [prod, dev, monitoring] namespaces"
-      pattern:
-        metadata:
-          namespace:
-            anyOf:
-            - "prod"
-            - "dev"
-            - "monitoring"
+    - name: enforce-prod-namespace
+      match:
+        resources:
+          kinds:
+            - "*"
+          namespaces:
+            - "!prod"
+            - "!dev"
+            - "!monitoring"
+            - "!kube-system"
+            - "!kyverno"
+            - "!istio-system"
+      exclude:
+        resources:
+          annotations:
+            helm.sh/chart: "*"
+      validate:
+        message: "All resources must be in the [prod, dev, monitoring] namespaces"
+        pattern:
+          metadata:
+            namespace:
+              anyOf:
+                - "prod"
+                - "dev"
+                - "monitoring"

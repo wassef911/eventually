@@ -3,5 +3,5 @@ kind: Kustomization
 metadata:
   name: jaeger
 resources:
-- deployment.yaml
-- service.yaml
+  - deployment.yaml
+  - service.yaml

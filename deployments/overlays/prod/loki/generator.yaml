@@ -6,5 +6,5 @@ metadata:
 name: loki-stack
 releaseName: loki-stack
 repo: https://grafana.github.io/helm-charts
-version: 2.9.10
+version: 2.10.2
 valuesFile: loki/values.yaml

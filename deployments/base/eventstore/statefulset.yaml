@@ -16,56 +16,56 @@ spec:
         app: eventstore
     spec:
       containers:
-      - name: eventstore
-        image: ghcr.io/kurrent-io/eventstore:23.10.4-alpine
-        ports:
-        - containerPort: 1113  # External TCP
-        - containerPort: 2113  # HTTP
-        env:
-        - name: EVENTSTORE_CLUSTER_SIZE
-          value: "1"
-        - name: EVENTSTORE_RUN_PROJECTIONS
-          value: "All"
-        - name: EVENTSTORE_START_STANDARD_PROJECTIONS
-          value: "true"
-        - name: EVENTSTORE_EXT_TCP_PORT
-          value: "1113"
-        - name: EVENTSTORE_HTTP_PORT
-          value: "2113"
-        - name: EVENTSTORE_INSECURE
-          value: "true"
-        - name: EVENTSTORE_ENABLE_EXTERNAL_TCP
-          value: "true"
-        - name: EVENTSTORE_ENABLE_EXTERNAL_HTTP
-          value: "true"
-        - name: EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP
-          value: "true"
-        - name: EVENTSTORE_ALLOW_UNKNOWN_OPTIONS
-          value: "true"
-        volumeMounts:
-        - name: eventstore-data
-          mountPath: /var/lib/eventstore
-        - name: eventstore-logs
-          mountPath: /var/log/eventstore
+        - name: eventstore
+          image: ghcr.io/kurrent-io/eventstore:23.10.4-alpine
+          ports:
+            - containerPort: 1113 # External TCP
+            - containerPort: 2113 # HTTP
+          env:
+            - name: EVENTSTORE_CLUSTER_SIZE
+              value: "1"
+            - name: EVENTSTORE_RUN_PROJECTIONS
+              value: "All"
+            - name: EVENTSTORE_START_STANDARD_PROJECTIONS
+              value: "true"
+            - name: EVENTSTORE_EXT_TCP_PORT
+              value: "1113"
+            - name: EVENTSTORE_HTTP_PORT
+              value: "2113"
+            - name: EVENTSTORE_INSECURE
+              value: "true"
+            - name: EVENTSTORE_ENABLE_EXTERNAL_TCP
+              value: "true"
+            - name: EVENTSTORE_ENABLE_EXTERNAL_HTTP
+              value: "true"
+            - name: EVENTSTORE_ENABLE_ATOM_PUB_OVER_HTTP
+              value: "true"
+            - name: EVENTSTORE_ALLOW_UNKNOWN_OPTIONS
+              value: "true"
+          volumeMounts:
+            - name: eventstore-data
+              mountPath: /var/lib/eventstore
+            - name: eventstore-logs
+              mountPath: /var/log/eventstore
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "512Mi"
+  volumeClaimTemplates:
+    - metadata:
+        name: eventstore-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            cpu: "1"
-            memory: "1Gi"
-          limits:
-            cpu: "1"
-            memory: "2Gi"
-  volumeClaimTemplates:
-  - metadata:
-      name: eventstore-data
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 2Gi
-  - metadata:
-      name: eventstore-logs
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      resources:
-        requests:
-          storage: 2Gi
+            storage: 2Gi
+    - metadata:
+        name: eventstore-logs
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 2Gi

@@ -3,5 +3,5 @@ kind: Kustomization
 metadata:
   name: mongodb
 resources:
-- statefulset.yaml
-- service.yaml
+  - statefulset.yaml
+  - service.yaml

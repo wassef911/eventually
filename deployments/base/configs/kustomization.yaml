@@ -3,8 +3,8 @@ kind: Kustomization
 metadata:
   name: configs
 resources:
-- configmaps.yaml
-- github-registry-secret.yaml
-- mongodb-secret.yaml
-- policy.yaml
-- clusterroles.yaml
+  - configmaps.yaml
+  - github-registry-secret.yaml
+  - mongodb-secret.yaml
+  - policy.yaml
+  - clusterroles.yaml

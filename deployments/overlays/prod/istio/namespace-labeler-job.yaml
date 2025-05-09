@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: namespace-labeler
+spec:
+  template:
+    spec:
+      containers:
+      - name: kubectl
+        image: bitnami/kubectl:latest
+        command: ["/bin/sh", "-c"]
+        args:
+          - kubectl label namespace $(LABEL_NAMESPACE) $(LABEL_KEY)=$(LABEL_VALUE) --overwrite
+        envFrom:
+          - configMapRef:
+              name: namespace-labeler
+      restartPolicy: Never
+  backoffLimit: 1

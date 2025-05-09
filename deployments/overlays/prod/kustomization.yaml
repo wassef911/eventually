@@ -7,10 +7,25 @@ resources:
 
 patches:
   - path: patches/api-svc.yaml
+    target:
+      kind: Service
+      name: api
   - path: patches/restrict-developer-permissions.yaml
+    target:
+      kind: ClusterRole
+      name: developer-base
 
 generators:
-- ./loki/generator.yaml
+  - ./loki/generator.yaml
+  - ./istio/generator.yaml
+
+configMapGenerator:
+  - name: namespace-labeler
+    literals:
+      - LABEL_NAMESPACE=prod
+      - LABEL_KEY=istio.io/dataplane-mode
+      - LABEL_VALUE=ambient
 
 configurations:
   - kustomizeconfig.yaml
+  - istio/namespace-labeler-job.yaml

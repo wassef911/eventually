@@ -3,9 +3,9 @@ kind: ClusterRole
 metadata:
   name: developer-base
 rules:
-- apiGroups: [""]
-  resources: ["pods", "services", "configmaps", "persistentvolumeclaims"]
-  verbs: ["get", "list", "watch"]  # calm down you little guy!
-- apiGroups: ["apps"]
-  resources: ["deployments", "statefulsets", "replicasets"]
-  verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods", "services", "configmaps", "persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"] # calm down you little guy!
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "replicasets"]
+    verbs: ["get", "list", "watch"]
