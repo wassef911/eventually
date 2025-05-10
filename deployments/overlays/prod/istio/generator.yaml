@@ -101,3 +101,6 @@ values:
   external_services:
     istio:
       enabled: true
+    prometheus:
+      enabled: true
+      url: "http://loki-stack-prometheus-server.prod.svc.cluster.local:9090"

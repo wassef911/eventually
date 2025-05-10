@@ -97,11 +97,13 @@ The structure separates concerns according to DDD layers:
     │   ├────── api
     │   ├────── configs
     │   │   ├────────── clusterroles.yaml
-    │   │   ├────────── configmaps.yaml
-    │   │   ├────────── github-registry-secret.yaml
-    │   │   ├────────── kustomization.yaml
-    │   │   ├────────── mongodb-secret.yaml
     │   │   └────────── policy.yaml
+    │   │   ├────────── configmaps.yaml
+    │   │   ├────────── kustomization.yaml
+                        # git ignored and needs to be created manually...
+    │   │   ├────────── github-registry-secret.yaml
+    │   │   ├────────── mongodb-secret.yaml
+
     │   ├────── elasticsearch
     │   ├────── eventstore
     │   ├────── ingress.yaml

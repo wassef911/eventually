@@ -1,6 +1,12 @@
+test_pod:
+  enabled: false
 fluent-bit:
   enabled: false
 promtail:
-  enabled: false
+  enabled: true
 grafana:
+  enabled: true
+  image:
+    tag: 11.6.1
+prometheus:
   enabled: true
