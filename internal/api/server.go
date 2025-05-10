@@ -79,9 +79,12 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	if err := s.setupTracing(); err != nil {
+	tracer, closer, err := tracing.New(s.config.Jaeger)
+	if err != nil {
 		return err
 	}
+	defer closer.Close()
+	opentracing.SetGlobalTracer(tracer)
 
 	if err := s.setupDatabases(ctx); err != nil {
 		return err
@@ -131,16 +134,6 @@ func (s *Server) validateConfig(ctx context.Context) error {
 	if err := s.validator.StructCtx(ctx, s.config); err != nil {
 		return errors.Wrap(err, "config validate")
 	}
-	return nil
-}
-
-func (s *Server) setupTracing() error {
-	tracer, closer, err := tracing.New(s.config.Jaeger)
-	if err != nil {
-		return err
-	}
-	defer closer.Close()
-	opentracing.SetGlobalTracer(tracer)
 	return nil
 }
 

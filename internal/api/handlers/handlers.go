@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
+	"github.com/opentracing/opentracing-go"
 	uuid "github.com/satori/go.uuid"
 
 	"github.com/wassef911/eventually/internal/api/constants"
@@ -78,7 +79,8 @@ func (h *orderHandlers) MapRoutes() {
 // @Router /orders [post]
 func (h *orderHandlers) CreateOrder() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx, span := tracing.StartHttpServerTracerSpan(c, "orderHandlers.CreateOrder")
+		ctx := c.Request().Context()
+		span, _ := opentracing.StartSpanFromContext(ctx, "orderHandlers.CreateOrder")
 		defer span.Finish()
 
 		var reqDto dto.CreateOrderReqDto
@@ -113,7 +115,8 @@ func (h *orderHandlers) CreateOrder() echo.HandlerFunc {
 // @Router /orders/pay/{id} [put]
 func (h *orderHandlers) PayOrder() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx, span := tracing.StartHttpServerTracerSpan(c, "orderHandlers.PayOrder")
+		ctx := c.Request().Context()
+		span, _ := opentracing.StartSpanFromContext(ctx, "orderHandlers.PayOrder")
 		defer span.Finish()
 
 		orderID, err := uuid.FromString(c.Param(constants.ID))
@@ -151,7 +154,8 @@ func (h *orderHandlers) PayOrder() echo.HandlerFunc {
 // @Router /orders/submit/{id} [put]
 func (h *orderHandlers) SubmitOrder() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx, span := tracing.StartHttpServerTracerSpan(c, "orderHandlers.SubmitOrder")
+		ctx := c.Request().Context()
+		span, _ := opentracing.StartSpanFromContext(ctx, "orderHandlers.SubmitOrder")
 		defer span.Finish()
 
 		orderID, err := uuid.FromString(c.Param(constants.ID))
@@ -185,7 +189,8 @@ func (h *orderHandlers) SubmitOrder() echo.HandlerFunc {
 // @Router /orders/cancel/{id} [post]
 func (h *orderHandlers) CancelOrder() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx, span := tracing.StartHttpServerTracerSpan(c, "orderHandlers.CancelOrder")
+		ctx := c.Request().Context()
+		span, _ := opentracing.StartSpanFromContext(ctx, "orderHandlers.CancelOrder")
 		defer span.Finish()
 
 		orderID, err := uuid.FromString(c.Param(constants.ID))
@@ -223,7 +228,8 @@ func (h *orderHandlers) CancelOrder() echo.HandlerFunc {
 // @Router /orders/complete/{id} [post]
 func (h *orderHandlers) CompleteOrder() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx, span := tracing.StartHttpServerTracerSpan(c, "orderHandlers.CompleteOrder")
+		ctx := c.Request().Context()
+		span, _ := opentracing.StartSpanFromContext(ctx, "orderHandlers.CompleteOrder")
 		defer span.Finish()
 
 		orderID, err := uuid.FromString(c.Param(constants.ID))
@@ -257,7 +263,8 @@ func (h *orderHandlers) CompleteOrder() echo.HandlerFunc {
 // @Router /orders/address/{id} [put]
 func (h *orderHandlers) ChangeDeliveryAddress() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx, span := tracing.StartHttpServerTracerSpan(c, "orderHandlers.ChangeDeliveryAddress")
+		ctx := c.Request().Context()
+		span, _ := opentracing.StartSpanFromContext(ctx, "orderHandlers.ChangeDeliveryAddress")
 		defer span.Finish()
 
 		param := c.Param(constants.ID)
@@ -298,7 +305,8 @@ func (h *orderHandlers) ChangeDeliveryAddress() echo.HandlerFunc {
 // @Router /orders/cart/{id} [put]
 func (h *orderHandlers) UpdateShoppingCart() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx, span := tracing.StartHttpServerTracerSpan(c, "orderHandlers.UpdateShoppingCart")
+		ctx := c.Request().Context()
+		span, _ := opentracing.StartSpanFromContext(ctx, "orderHandlers.UpdateShoppingCart")
 		defer span.Finish()
 
 		orderID, err := uuid.FromString(c.Param(constants.ID))
@@ -336,7 +344,8 @@ func (h *orderHandlers) UpdateShoppingCart() echo.HandlerFunc {
 // @Router /orders/{id} [get]
 func (h *orderHandlers) GetOrderByID() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx, span := tracing.StartHttpServerTracerSpan(c, "orderHandlers.GetOrderByID")
+		ctx := c.Request().Context()
+		span, _ := opentracing.StartSpanFromContext(ctx, "orderHandlers.GetOrderByID")
 		defer span.Finish()
 
 		param := c.Param(constants.ID)
@@ -372,7 +381,8 @@ func (h *orderHandlers) GetOrderByID() echo.HandlerFunc {
 // @Router /orders/search [get]
 func (h *orderHandlers) Search() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		ctx, span := tracing.StartHttpServerTracerSpan(c, "orderHandlers.Search")
+		ctx := c.Request().Context()
+		span, _ := opentracing.StartSpanFromContext(ctx, "orderHandlers.Search")
 		defer span.Finish()
 
 		pq := utils.NewPaginationFromQueryParams(c.QueryParam(constants.Size), c.QueryParam(constants.Page))
