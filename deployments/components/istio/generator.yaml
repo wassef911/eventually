@@ -1,0 +1,63 @@
+apiVersion: builtin
+kind: HelmChartInflationGenerator
+metadata:
+  name: istio-base
+name: base
+releaseName: istio-base
+repo: https://istio-release.storage.googleapis.com/charts
+version: 1.22.3
+---
+apiVersion: builtin
+kind: HelmChartInflationGenerator
+metadata:
+  name: istio-cni
+name: cni
+releaseName: istio-cni
+repo: https://istio-release.storage.googleapis.com/charts
+version: 1.22.3
+---
+apiVersion: builtin
+kind: HelmChartInflationGenerator
+metadata:
+  name: istiod
+name: istiod
+releaseName: istiod
+repo: https://istio-release.storage.googleapis.com/charts
+version: 1.22.3
+values:
+  pilot:
+    replicaCount: 1
+    autoscaleEnabled: false
+    enableProtocolSniffingForOutbound: false
+    enableProtocolSniffingForInbound: false
+    holdApplicationUntilProxyStarts: true
+  meshConfig:
+    enablePrometheusMerge: true
+---
+apiVersion: builtin
+kind: HelmChartInflationGenerator
+metadata:
+  name: ztunnel
+name: ztunnel
+releaseName: ztunnel
+repo: https://istio-release.storage.googleapis.com/charts
+version: 1.22.3
+values:
+  pilot:
+    initContainers:
+    - name: wait-for-cert
+      image: busybox:1.28
+      command: ['sh', '-c', 'until kubectl get configmap istio-ca-root-cert -n istio-system; do echo waiting for configmap; sleep 2; done']
+  readinessProbe:
+    httpGet:
+      path: /healthz/ready
+      port: 15021
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  # Add startup probe to handle slow initial connections
+  startupProbe:
+    httpGet:
+      path: /healthz/ready
+      port: 15021
+    failureThreshold: 30
+    periodSeconds: 5

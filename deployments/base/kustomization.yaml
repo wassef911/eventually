@@ -5,5 +5,4 @@ resources:
   - configs
   - elasticsearch
   - eventstore
-  - jaeger
   - mongodb

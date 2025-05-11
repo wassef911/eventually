@@ -1,11 +1,15 @@
 #!/bin/bash
 
-set -euo pipefail
+KUSTOMIZE_DIR="deployments/overlays/prod"
+echo "Deploying from: $KUSTOMIZE_DIR"
 
-# k directory (default to current if not provided)
-KUSTOMIZE_DIR="${1:-.}"
+cd $KUSTOMIZE_DIR
+kustomize build --enable-helm . | kubectl apply -f -
 
-echo "Deploying using kustomize from: $KUSTOMIZE_DIR"
+cd -
+
+KUSTOMIZE_DIR="deployments/components"
+echo "Deploying from: $KUSTOMIZE_DIR"
 
 cd $KUSTOMIZE_DIR
 kustomize build --enable-helm . | kubectl apply -f -

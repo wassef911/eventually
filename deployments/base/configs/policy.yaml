@@ -21,12 +21,13 @@ spec:
             - "!kube-system"
             - "!kyverno"
             - "!istio-system"
+            - "!monitoring"
       exclude:
         resources:
           annotations:
             helm.sh/chart: "*"
       validate:
-        message: "All resources must be in the [prod, dev, monitoring] namespaces"
+        message: "All resources must be in the [prod, dev] namespaces"
         pattern:
           metadata:
             namespace:

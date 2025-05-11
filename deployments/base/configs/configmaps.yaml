@@ -17,7 +17,7 @@ data:
 
   JAEGER_ENABLE: "true"
   JAEGER_SERVICE_NAME: "delivery"
-  JAEGER_HOST_PORT: "jaeger:6831"
+  JAEGER_HOST_PORT: "jaeger.monitoring.svc.cluster.local:6831"
   JAEGER_LOG_SPANS: "false"
 
   EVENTSTORE_CONFIG_CONNECTION_STRING: "esdb://eventstore:2113?tls=false"
