@@ -8,22 +8,3 @@ releaseName: loki-stack
 repo: https://grafana.github.io/helm-charts
 version: 2.10.2
 valuesFile: values.yaml
----
-apiVersion: builtin
-kind: HelmChartInflationGenerator
-metadata:
-  name: kiali
-name: kiali-server
-releaseName: kiali
-repo: https://kiali.org/helm-charts
-values:
-  auth:
-    strategy: "anonymous" # No authentication for Kiali UI, this is for demo purposes yo!
-  deployment:
-    view_only_mode: true
-  external_services:
-    istio:
-      enabled: true
-    prometheus:
-      enabled: true
-      url: "http://loki-stack-prometheus-server.monitoring.svc.cluster.local:9090"

@@ -93,32 +93,36 @@ The structure separates concerns according to DDD layers:
 
 #### Cluster Structure
 ```sh
-    ├────── base
-    │   ├────── api
-    │   ├────── configs
-    │   │   ├────────── clusterroles.yaml
-    │   │   └────────── policy.yaml
-    │   │   ├────────── configmaps.yaml
-    │   │   ├────────── kustomization.yaml
-                        # git ignored and needs to be created manually...
-    │   │   ├────────── github-registry-secret.yaml
-    │   │   ├────────── mongodb-secret.yaml
-
-    │   ├────── elasticsearch
-    │   ├────── eventstore
-    │   ├────── ingress.yaml
-    │   ├────── jaeger
-    │   ├────── kustomization.yaml
-    │   └────── mongodb
-    ├────── overlays
-    │   └────── prod
-    │       ├────── charts
-    │       ├────────── kustomization.yaml
-    │       ├────────── kustomizeconfig.yaml
-    │       ├────── loki
-    │       │   ├────────── generator.yaml
-    │       │   └────────── values.yaml
-    │       └────── patches
-    │           ├────────── api-svc.yaml
-    │           └────────── restrict-developer-permissions.yaml
+├── base
+│   ├── api
+│   ├── configs
+│   │   ├── clusterroles.yaml
+│   │   ├── configmaps.yaml
+│   │   ├── github-registry-secret.yaml
+│   │   ├── kustomization.yaml
+│   │   ├── mongodb-secret.yaml
+│   │   └── policy.yaml
+│   ├── elasticsearch
+│   ├── eventstore
+│   ├── kustomization.yaml
+│   └── mongodb
+├── components
+│   ├── istio
+│   │   ├── charts
+│   │   ├── generator.yaml
+│   │   └── kustomization.yaml
+│   ├── kustomization.yaml
+│   ├── kustomizeconfig.yaml
+│   └── monitoring
+│       ├── charts
+│       ├── generator.yaml
+│       ├── jaeger
+│       ├── kustomization.yaml
+│       └── values.yaml
+└── overlays
+    └── prod
+        ├── kustomization.yaml
+        └── patches
+            ├── api-svc.yaml
+            └── restrict-developer-permissions.yaml
 ```

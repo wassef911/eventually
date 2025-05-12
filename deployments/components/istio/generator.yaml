@@ -28,11 +28,34 @@ values:
   pilot:
     replicaCount: 1
     autoscaleEnabled: false
-    enableProtocolSniffingForOutbound: false
-    enableProtocolSniffingForInbound: false
     holdApplicationUntilProxyStarts: true
   meshConfig:
     enablePrometheusMerge: true
+    defaultConfig:
+      proxyStatsMatcher:
+        inclusionRegexps:
+          - ".*outlier_detection.*"
+          - ".*upstream_rq.*"
+          - ".*upstream_cx.*"
+          - ".*version.*"
+          - ".*cluster.*"
+        inclusionPrefixes:
+          - "http.outbound"
+          - "http.inbound"
+          - "tcp."
+      extraStatTags:
+        - destination_cluster
+        - source_cluster
+  telemetry:
+    v2:
+      prometheus:
+        enabled: true
+        configOverride:
+          metrics:
+            - name: requests_total
+              dimensions:
+                destination_cluster: "node.metadata['CLUSTER_ID']"
+                source_cluster: "upstream_peer.cluster_id"
 ---
 apiVersion: builtin
 kind: HelmChartInflationGenerator
@@ -43,21 +66,44 @@ releaseName: ztunnel
 repo: https://istio-release.storage.googleapis.com/charts
 version: 1.22.3
 values:
-  pilot:
-    initContainers:
+  initContainers:
     - name: wait-for-cert
       image: busybox:1.28
-      command: ['sh', '-c', 'until kubectl get configmap istio-ca-root-cert -n istio-system; do echo waiting for configmap; sleep 2; done']
-  readinessProbe:
-    httpGet:
-      path: /healthz/ready
-      port: 15021
-    initialDelaySeconds: 5
-    periodSeconds: 5
-  # Add startup probe to handle slow initial connections
-  startupProbe:
-    httpGet:
-      path: /healthz/ready
-      port: 15021
-    failureThreshold: 30
-    periodSeconds: 5
+      command:
+        [
+          "sh",
+          "-c",
+          "until kubectl get configmap istio-ca-root-cert -n istio-system; do echo waiting for configmap; sleep 2; done",
+        ]
+  probes:
+    readinessProbe:
+      httpGet:
+        path: /healthz/ready
+        port: 15021
+      initialDelaySeconds: 5
+      periodSeconds: 5
+    startupProbe:
+      httpGet:
+        path: /healthz/ready
+        port: 15021
+      failureThreshold: 30
+      periodSeconds: 5
+---
+apiVersion: builtin
+kind: HelmChartInflationGenerator
+metadata:
+  name: kiali
+name: kiali-server
+releaseName: kiali
+repo: https://kiali.org/helm-charts
+values:
+  auth:
+    strategy: "anonymous" # No authentication for Kiali UI, this is for demo purposes yo!
+  deployment:
+    view_only_mode: true
+  external_services:
+    istio:
+      enabled: true
+    prometheus:
+      enabled: true
+      url: http://prometheus.istio-system:9090

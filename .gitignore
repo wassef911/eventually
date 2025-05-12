@@ -30,3 +30,5 @@ config/config.yaml
 src
 deployments/base/configs/*-secret.yaml
 deployments/components/monitoring/charts/*
+deployments/components/istio/charts/*
+.garbage
