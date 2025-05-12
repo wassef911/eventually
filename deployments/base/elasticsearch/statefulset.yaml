@@ -4,6 +4,7 @@ metadata:
   name: elasticsearch
   labels:
     app: elasticsearch
+    istio-injection: enabled
 spec:
   serviceName: elasticsearch
   replicas: 1

@@ -4,6 +4,7 @@ metadata:
   name: api
   labels:
     app: api
+    istio-injection: enabled
 spec:
   replicas: 1
   selector:

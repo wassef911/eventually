@@ -4,6 +4,7 @@ metadata:
   name: eventstore
   labels:
     app: eventstore
+    istio-injection: enabled
 spec:
   serviceName: eventstore
   replicas: 1

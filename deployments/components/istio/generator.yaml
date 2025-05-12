@@ -60,34 +60,43 @@ values:
 apiVersion: builtin
 kind: HelmChartInflationGenerator
 metadata:
-  name: ztunnel
-name: ztunnel
-releaseName: ztunnel
-repo: https://istio-release.storage.googleapis.com/charts
-version: 1.22.3
+  name: prometheus
+name: prometheus
+releaseName: prometheus
+repo: https://prometheus-community.github.io/helm-charts
+version: 25.1.0
+namespace: istio-system
 values:
-  initContainers:
-    - name: wait-for-cert
-      image: busybox:1.28
-      command:
-        [
-          "sh",
-          "-c",
-          "until kubectl get configmap istio-ca-root-cert -n istio-system; do echo waiting for configmap; sleep 2; done",
-        ]
-  probes:
-    readinessProbe:
-      httpGet:
-        path: /healthz/ready
-        port: 15021
-      initialDelaySeconds: 5
-      periodSeconds: 5
-    startupProbe:
-      httpGet:
-        path: /healthz/ready
-        port: 15021
-      failureThreshold: 30
-      periodSeconds: 5
+  extraScrapeConfigs: |
+    - job_name: 'istio-mesh'
+      kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names: ['istio-system']
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+          action: keep
+          regex: istio-telemetry;prometheus
+    - job_name: 'envoy-stats'
+      metrics_path: /stats/prometheus
+      kubernetes_sd_configs:
+        - role: pod
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_container_port_name]
+          action: keep
+          regex: '.*-envoy-prom'
+    retention: 7d
+    persistentVolume:
+      enabled: true
+      size: 5Gi
+  alertmanager:
+    enabled: false
+  pushgateway:
+    enabled: false
+  nodeExporter:
+    enabled: false
+  kubeStateMetrics:
+    enabled: true
 ---
 apiVersion: builtin
 kind: HelmChartInflationGenerator
@@ -98,12 +107,12 @@ releaseName: kiali
 repo: https://kiali.org/helm-charts
 values:
   auth:
-    strategy: "anonymous" # No authentication for Kiali UI, this is for demo purposes yo!
+    strategy: "anonymous"
   deployment:
     view_only_mode: true
   external_services:
-    istio:
-      enabled: true
     prometheus:
-      enabled: true
-      url: http://prometheus.istio-system:9090
+      url: http://prometheus-server.istio-system:80
+      custom_metrics_url:  http://prometheus-server.istio-system:80
+    grafana:
+      enabled: false
