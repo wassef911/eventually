@@ -4,7 +4,6 @@ metadata:
   name: eventstore
   labels:
     app: eventstore
-    istio-injection: enabled
 spec:
   serviceName: eventstore
   replicas: 1
@@ -15,13 +14,16 @@ spec:
     metadata:
       labels:
         app: eventstore
+      annotations:
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/discoveryAddress: "istiod.istio-system.svc:15012"
     spec:
       containers:
         - name: eventstore
           image: ghcr.io/kurrent-io/eventstore:23.10.4-alpine
           ports:
-            - containerPort: 1113 # External TCP
-            - containerPort: 2113 # HTTP
+            - containerPort: 1113
+            - containerPort: 2113
           env:
             - name: EVENTSTORE_CLUSTER_SIZE
               value: "1"
@@ -51,7 +53,7 @@ spec:
           resources:
             requests:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "128Mi"
             limits:
               cpu: "1"
               memory: "512Mi"

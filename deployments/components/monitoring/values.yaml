@@ -3,10 +3,37 @@ test_pod:
 fluent-bit:
   enabled: false
 promtail:
-  enabled: false
+  enabled: true
 grafana:
-  enabled: false
+  enabled: true
   image:
     tag: 11.6.1
 prometheus:
   enabled: true
+  prometheus-pushgateway:
+    enabled: true
+  prometheus-node-exporter:
+    enabled: true
+  alertmanager:
+    enabled: true
+  extraScrapeConfigs: |
+    - job_name: 'istiod'
+      kubernetes_sd_configs:
+        - role: endpoints
+          namespaces:
+            names: ['prod']
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_service_name]
+          action: keep
+          regex: istiod
+    - job_name: 'envoy-stats'
+      metrics_path: /stats/prometheus
+      kubernetes_sd_configs:
+        - role: pod
+      relabel_configs:
+        - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+          action: keep
+          regex: true
+        - source_labels: [__meta_kubernetes_pod_container_port_number]
+          action: keep
+          regex: "15090"

@@ -1,12 +1,37 @@
-# Docs in progress, still an ongoing repo!
+# **Motivation**
 
-## Prerequisites
+Pro tip: Don't drive blindfolded.
 
+This project demonstrates a **production-grade observability setup** for a distributed system, capturing all three pillars of observability:
+- **Logs**
+- **Metrics**
+- **Traces**
+
+### **Okitou! why This Demo?**
+The stack includes:
+- A **Golang API** (because why not?) with **MongoDB**, **EventStore** and **Elasticsearch**.
+- **Kubernetes manifests** across three namespaces (`prod`, `monitoring`, `istio-system`) to simulate a real multi-environment setup
+- The full **observability toolkit**:
+  - **Prometheus** + **Node Exporter** (metrics, because $htop is *so* 1999)
+  - **Grafana** (With enough dashboards)
+  - **Loki** + **Promtail**
+  - **Jaeger** (To play detective)
+  - **Kiali** (Who knows what's up wtih Istio)
+
+Although you might not need EVERYTHING in this repo, this setup mirrors real-world observability needs, ensuring you can **monitor, alert, and troubleshoot** before users notice anything’s wrong.
+Key Configuration
+
+#### Key Configuration
+* Kustomize overlays for environment-specific configurations, although only worked on a "prod" setup.
+* Separate RBAC restrictions for developer-base in production VS sre role.
+* A base cluster policy using **kyverno** to ensure all namespaced resources are in [dev/prod/monitoring/istio-system].
+
+## Prerequisites locally
 - Docker
 - Docker Compose
 - go 1.24
 
-## Local Setup
+## Setup
 
 1. Copy `.env.example` to `.env`:
    ```sh
@@ -30,7 +55,7 @@ The REST API documentation is available at:  http://localhost:5007/swagger/index
 
 ## Project Structure
 
-### Internal Structure (DDD Approach)
+#### Internal Structure (DDD Approach)
 
 The internal structure follows Domain-Driven Design (DDD) principles:
 
@@ -64,35 +89,14 @@ The structure separates concerns according to DDD layers:
 - `api`: Presentation layer handling HTTP requests/responses
 - `delivery`: Core domain logic and business rules
 - `infrastructure`: Technical implementation details and external integrations
-
-#### Plant UML:
-
-![Puml](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/wassef911/eventually/refs/heads/main/internal.puml)
-
 ---
-
-### Cluster Setup Notes
-
-1. **Grafana Agent Operator**
-   Followed the [official documentation](https://grafana.com/docs/agent/latest/operator/getting-started/) for setup.
-   - Manually created Grafana CRDs as required by their installation process
-   - Modified Loki deployment to remove strict anti-affinity rules (could alternatively use `soft` anti-affinity)
-
-2. **Key Configuration**
-   - Kustomize overlays for environment-specific configurations, although only worked on a "prod" setup.
-   - Separate RBAC restrictions for **developer-base** access in production VS **sre**.
-   - A base cluster policy using **kyverno** to ensure all namespaced resources are in **[dev-prod-monitoring]**.
-
-3. **Observability Stack**
-   - Jaeger for distributed tracing
-   - Loki for log aggregation
-   - Grafana Agent for metrics collection
 
 #### Cluster Diagram
 ![current cluster](./diagram_cluster.png)
 
 #### Cluster Structure
 ```sh
+deployments
 ├── base
 │   ├── api
 │   ├── configs
@@ -126,3 +130,10 @@ The structure separates concerns according to DDD layers:
             ├── api-svc.yaml
             └── restrict-developer-permissions.yaml
 ```
+
+#### Screenshots
+![logs](./screenshots/go-service-logs.png)
+![traces](./screenshots/go-service-traces.png)
+![mesh](./screenshots/mesh-1.png)
+![mesh setup](./screenshots/mesh-2.png)
+![metrics](./screenshots/nodes.png)

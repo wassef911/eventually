@@ -4,7 +4,6 @@ metadata:
   name: api
   labels:
     app: api
-    istio-injection: enabled
 spec:
   replicas: 1
   selector:
@@ -14,6 +13,9 @@ spec:
     metadata:
       labels:
         app: api
+      annotations:
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/discoveryAddress: "istiod.istio-system.svc:15012"
     spec:
       imagePullSecrets:
         - name: github-registry-secret
@@ -28,11 +30,11 @@ spec:
             - containerPort: 8080
           resources:
             requests:
-              memory: "128Mi"
+              memory: "64Mi"
               cpu: "250m"
             limits:
-              memory: "256Mi"
-              cpu: "500m"
+              memory: "64Mi"
+              cpu: "250m"
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:

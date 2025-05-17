@@ -20,7 +20,6 @@ spec:
             - "!dev"
             - "!kube-system"
             - "!kyverno"
-            - "!istio-system"
             - "!monitoring"
       exclude:
         resources:

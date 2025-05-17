@@ -4,7 +4,6 @@ metadata:
   name: elasticsearch
   labels:
     app: elasticsearch
-    istio-injection: enabled
 spec:
   serviceName: elasticsearch
   replicas: 1
@@ -15,6 +14,9 @@ spec:
     metadata:
       labels:
         app: elasticsearch
+      annotations:
+        sidecar.istio.io/inject: "true"
+        sidecar.istio.io/discoveryAddress: "istiod.istio-system.svc:15012"
     spec:
       containers:
         - name: elasticsearch
@@ -40,11 +42,11 @@ spec:
               mountPath: /usr/share/elasticsearch/data
           resources:
             requests:
-              cpu: "1"
-              memory: "1Gi"
+              cpu: "500m"
+              memory: "128Mi"
             limits:
               cpu: "1"
-              memory: "2Gi"
+              memory: "512Mi"
           securityContext:
             capabilities:
               add:

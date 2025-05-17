@@ -1,15 +1,6 @@
 apiVersion: builtin
 kind: HelmChartInflationGenerator
 metadata:
-  name: istio-base
-name: base
-releaseName: istio-base
-repo: https://istio-release.storage.googleapis.com/charts
-version: 1.22.3
----
-apiVersion: builtin
-kind: HelmChartInflationGenerator
-metadata:
   name: istio-cni
 name: cni
 releaseName: istio-cni
@@ -25,13 +16,17 @@ releaseName: istiod
 repo: https://istio-release.storage.googleapis.com/charts
 version: 1.22.3
 values:
-  pilot:
-    replicaCount: 1
-    autoscaleEnabled: false
-    holdApplicationUntilProxyStarts: true
+  global:
+    platform: microk8s
+    istioNamespace: istio-system
+  sidecarInjectorWebhook:
+    enableNamespacesByDefault: true
+  proxy:
+    caAddress: istiod.istio-system.svc:15012
   meshConfig:
     enablePrometheusMerge: true
     defaultConfig:
+      discoveryAddress: istiod.istio-system.svc:15012
       proxyStatsMatcher:
         inclusionRegexps:
           - ".*outlier_detection.*"
@@ -46,6 +41,10 @@ values:
       extraStatTags:
         - destination_cluster
         - source_cluster
+  pilot:
+    replicaCount: 1
+    autoscaleEnabled: false
+    holdApplicationUntilProxyStarts: true
   telemetry:
     v2:
       prometheus:
@@ -54,49 +53,8 @@ values:
           metrics:
             - name: requests_total
               dimensions:
-                destination_cluster: "node.metadata['CLUSTER_ID']"
+                destination_cluster: "node.metadata['cluster_id']"
                 source_cluster: "upstream_peer.cluster_id"
----
-apiVersion: builtin
-kind: HelmChartInflationGenerator
-metadata:
-  name: prometheus
-name: prometheus
-releaseName: prometheus
-repo: https://prometheus-community.github.io/helm-charts
-version: 25.1.0
-namespace: istio-system
-values:
-  extraScrapeConfigs: |
-    - job_name: 'istio-mesh'
-      kubernetes_sd_configs:
-        - role: endpoints
-          namespaces:
-            names: ['istio-system']
-      relabel_configs:
-        - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
-          action: keep
-          regex: istio-telemetry;prometheus
-    - job_name: 'envoy-stats'
-      metrics_path: /stats/prometheus
-      kubernetes_sd_configs:
-        - role: pod
-      relabel_configs:
-        - source_labels: [__meta_kubernetes_pod_container_port_name]
-          action: keep
-          regex: '.*-envoy-prom'
-    retention: 7d
-    persistentVolume:
-      enabled: true
-      size: 5Gi
-  alertmanager:
-    enabled: false
-  pushgateway:
-    enabled: false
-  nodeExporter:
-    enabled: false
-  kubeStateMetrics:
-    enabled: true
 ---
 apiVersion: builtin
 kind: HelmChartInflationGenerator
@@ -107,12 +65,17 @@ releaseName: kiali
 repo: https://kiali.org/helm-charts
 values:
   auth:
-    strategy: "anonymous"
+    strategy: anonymous
   deployment:
     view_only_mode: true
   external_services:
     prometheus:
-      url: http://prometheus-server.istio-system:80
-      custom_metrics_url:  http://prometheus-server.istio-system:80
+      url: http://loki-stack-prometheus-server.monitoring.svc.cluster.local:80
     grafana:
-      enabled: false
+      enabled: true
+    tracing:
+      enabled: true
+      internal_url: "http://jaeger.monitoring.svc.cluster.local:16686"
+    istio:
+      root_namespace: istio-system
+    istio_namespace: istio-system
