@@ -1,6 +1,6 @@
 # **Motivation**
 
-Pro tip: Don't drive blindfolded.
+Pro tip: Don't drive blindfolded. 🏎️ 👮‍♂️
 
 This project demonstrates a **production-grade observability setup** for a distributed system, capturing all three pillars of observability:
 - **Logs**
@@ -16,10 +16,9 @@ The stack includes:
   - **Grafana** (With enough dashboards)
   - **Loki** + **Promtail**
   - **Jaeger** (To play detective)
-  - **Kiali** (Who knows what's up wtih Istio)
+  - **Kiali** (Who knows what's up with Istio)
 
 Although you might not need EVERYTHING in this repo, this setup mirrors real-world observability needs, ensuring you can **monitor, alert, and troubleshoot** before users notice anything’s wrong.
-Key Configuration
 
 #### Key Configuration
 * Kustomize overlays for environment-specific configurations, although only worked on a "prod" setup.
